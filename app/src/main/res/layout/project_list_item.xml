@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark"
+    android:padding="4dp">
+
+    <!-- TODO: Change android:text to tools:text after implementing logic for real data -->
+    <!-- TODO: Create the fonts and styles for these TextViews -->
+
+    <TextView
+        android:id="@+id/tv_project_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="center"
+        android:text="My Cute Socks"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_project_name"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:text="20% done, 2 hours 5 minutes left"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/tv_details"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp">
+
+        <TextView
+            android:id="@+id/tv_time_spent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="01:34:44"
+            android:gravity="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="48sp" />
+
+        <!-- TODO: When user presses this icon, change it to pause and start timer -->
+        <ImageView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_play_circle"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
