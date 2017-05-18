@@ -12,18 +12,27 @@ import com.sofi.knittimer.data.Project;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
     private Context context;
     private DatabaseHandler mDatabaseHandler;
+    private List<Project> projects;
 
     public void closeDatabase() {
         mDatabaseHandler.closeDatabaseConnection();
     }
 
-    public ProjectAdapter(Context context) {
+    private void initListOfProjects() {
+        projects = mDatabaseHandler.getAllProjects();
+    }
+
+    public ProjectAdapter(Context context, DatabaseHandler handler) {
         this.context = context;
-        mDatabaseHandler = new DatabaseHandler(context);
+        mDatabaseHandler = handler;
+        initListOfProjects();
     }
 
     @Override
@@ -38,7 +47,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Project project = mDatabaseHandler.getProject(position);
+        initListOfProjects();
+
+        Project project = projects.get(position);
         holder.projectName.setText(project._name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
@@ -46,7 +57,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return mDatabaseHandler.getProjectsCount();
+        initListOfProjects();
+        return projects.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -71,13 +83,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         int littleMinutes = totalMinutes % 60; // total minutes - whole hours
         int totalHours = totalMinutes / 60;
 
-        String details = project._percentageDone + "% done, ";
+        String details = project._percentageDone + "% done, " + totalHours;
         if (totalHours == 1) {
-            details += totalHours + " hour and ";
+            details += " hour and ";
         } else {
-            details += totalHours + " hours and ";
+            details += " hours and ";
         }
-        details += littleMinutes + " minutes left";
+        details += littleMinutes;
+        if (littleMinutes == 1) {
+            details += " minute left";
+        } else {
+            details += " minutes left";
+        }
         return details;
     }
 

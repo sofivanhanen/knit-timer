@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -14,10 +15,6 @@ import com.sofi.knittimer.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Default User on 18.5.2017.
- */
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -37,6 +34,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private void initDatabase() {
         // Initializes the private mDatabase if it hasn't yet been initialized
         if (mDatabase == null) {
+            // TODO: Make the progressbar work (do this in background)
             mProgressBar.setVisibility(View.VISIBLE);
             mDatabase = this.getWritableDatabase();
             mProgressBar.setVisibility(View.GONE);
@@ -84,9 +82,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         initDatabase();
 
         Cursor cursor = mDatabase.query(TABLE_PROJECTS, new String[] {KEY_ID, KEY_NAME,
-                KEY_TIME_SPENT, KEY_PERCENT_DONE}, KEY_ID + "=?",
-                new String[] {String.valueOf(id)}, null, null, null, null);
-        if (cursor != null) cursor.moveToFirst();
+                KEY_TIME_SPENT, KEY_PERCENT_DONE}, KEY_ID + " = ?",
+                new String[] {"" + id}, null, null, null);
+
+        if (cursor == null || cursor.getCount() == 0) throw new IllegalStateException("getProject: Cursor was empty");
+
+        cursor.moveToFirst();
 
         Project project = new Project(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
                 Integer.parseInt(cursor.getString(2)), Integer.parseInt(cursor.getString(3)));
@@ -120,6 +121,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery("SELECT * FROM " + TABLE_PROJECTS, null);
         int count = cursor.getCount();
         cursor.close();
+        if (count == 0) Log.i("EMPTY CURSOR", "getProjectsCount: Cursor was empty");
+        else Log.i("CURSOR NOT EMPTY", "getProjectCount: Cursor was not empty");
         return count;
     }
 

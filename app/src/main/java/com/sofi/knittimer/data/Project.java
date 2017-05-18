@@ -1,9 +1,5 @@
 package com.sofi.knittimer.data;
 
-/**
- * Created by Default User on 18.5.2017.
- */
-
 // Knitting project class
 public class Project {
 
@@ -20,7 +16,7 @@ public class Project {
     }
 
     public int timeLeftInMillis() {
-        return Integer.parseInt(((100 - _percentageDone) * (_timeSpentInMillis * 1.0 / _percentageDone)) + "");
+        return Integer.parseInt(((100 - _percentageDone) * (_timeSpentInMillis / _percentageDone)) + "");
     }
 
 }
