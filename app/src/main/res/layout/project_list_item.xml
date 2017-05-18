@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark"
-    android:padding="4dp">
+    android:padding="4dp"
+    android:layout_marginTop="4dp">
 
     <!-- TODO: Change android:text to tools:text after implementing logic for real data -->
     <!-- TODO: Create the fonts and styles for these TextViews -->
