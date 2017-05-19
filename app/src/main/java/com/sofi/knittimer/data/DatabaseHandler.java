@@ -121,8 +121,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery("SELECT * FROM " + TABLE_PROJECTS, null);
         int count = cursor.getCount();
         cursor.close();
-        if (count == 0) Log.i("EMPTY CURSOR", "getProjectsCount: Cursor was empty");
-        else Log.i("CURSOR NOT EMPTY", "getProjectCount: Cursor was not empty");
         return count;
     }
 

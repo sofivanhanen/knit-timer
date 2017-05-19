@@ -16,7 +16,11 @@ public class Project {
     }
 
     public int timeLeftInMillis() {
-        return Integer.parseInt(((100 - _percentageDone) * (_timeSpentInMillis / _percentageDone)) + "");
+        if (_percentageDone == 0) {
+            return 0;
+        } else {
+            return Integer.parseInt(((100 - _percentageDone) * (_timeSpentInMillis / _percentageDone)) + "");
+        }
     }
 
 }

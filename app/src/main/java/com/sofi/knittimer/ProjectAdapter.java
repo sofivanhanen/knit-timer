@@ -78,6 +78,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     private String createDetailsString(Project project) {
         int timeRemaining = project.timeLeftInMillis();
+
+        if (timeRemaining == 0) { // Project hasn't been started (% is still set to 0)
+            return "0% done. Let's get to work!";
+        }
+
         int totalSeconds = timeRemaining / 1000;
         int totalMinutes = totalSeconds / 60;
         int littleMinutes = totalMinutes % 60; // total minutes - whole hours

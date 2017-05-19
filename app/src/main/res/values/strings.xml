@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">KnitTimer</string>
+    <string name="add_project_activity_header">Add a project</string>
+
+    <string name="add_project_name">Project name</string>
+    <string name="add_project_time">Time spent on project</string>
+    <string name="add_menu_item">Add</string>
+
+    <string-array name="spinner_array">
+        <item>Fresh</item> <!-- TODO: Add an option for adding projects one has already worked on -->
+    </string-array>
+
 </resources>
