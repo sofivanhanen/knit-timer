@@ -6,7 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimaryDark"
     android:padding="4dp"
-    android:layout_marginTop="4dp">
+    android:layout_marginTop="4dp"
+    android:backgroundTintMode="src_over"
+    android:backgroundTint="@color/black_high_opacity">
 
     <!-- TODO: Create the fonts and styles for these TextViews -->
 
@@ -30,7 +32,7 @@
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
         tools:text="20% done, 2 hours and 5 minutes left"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white_high_opacity"
         android:textSize="14sp" />
 
     <LinearLayout
@@ -48,15 +50,17 @@
             android:layout_weight="1"
             tools:text="01:34:44"
             android:gravity="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="48sp" />
+            android:textColor="@color/white_high_opacity"
+            android:textSize="48sp"
+            android:typeface="monospace"
+            android:fontFamily="monospace"/>
 
         <!-- TODO: When user presses this icon, change it to pause and start timer -->
         <ImageView
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:tint="@android:color/white"
+            android:tint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_play_circle"
             android:layout_gravity="center"/>
 
