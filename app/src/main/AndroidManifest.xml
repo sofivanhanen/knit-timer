@@ -22,6 +22,10 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+        <provider
+            android:authorities="com.sofi.knittimer.data.projectprovider"
+            android:name="com.sofi.knittimer.data.ProjectProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

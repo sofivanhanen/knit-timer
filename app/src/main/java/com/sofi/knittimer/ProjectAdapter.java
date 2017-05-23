@@ -1,38 +1,36 @@
 package com.sofi.knittimer;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.sofi.knittimer.data.DatabaseHandler;
 import com.sofi.knittimer.data.Project;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
     private Context context;
-    private DatabaseHandler mDatabaseHandler;
     private List<Project> projects;
 
-    public void closeDatabase() {
-        mDatabaseHandler.closeDatabaseConnection();
-    }
-
-    private void initListOfProjects() {
-        projects = mDatabaseHandler.getAllProjects();
-    }
-
-    public ProjectAdapter(Context context, DatabaseHandler handler) {
+    public ProjectAdapter(Context context) {
         this.context = context;
-        mDatabaseHandler = handler;
-        initListOfProjects();
+    }
+
+    public void swapCursor(Cursor newCursor) {
+        if (newCursor == null) {
+            return;
+        }
+        projects = new ArrayList<Project>();
+        if (newCursor.moveToFirst()) {
+            do {
+                projects.add(new Project(newCursor.getInt(0), newCursor.getString(1),
+                        newCursor.getInt(2), newCursor.getInt(3)));
+            } while (newCursor.moveToNext());
+        }
     }
 
     @Override
@@ -47,17 +45,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        initListOfProjects();
+        if (projects == null) { return; }
 
         Project project = projects.get(position);
-        holder.projectName.setText(project._name);
+        holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
     }
 
     @Override
     public int getItemCount() {
-        initListOfProjects();
+        if (projects == null) {return 0;}
         return projects.size();
     }
 
@@ -88,7 +86,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         int littleMinutes = totalMinutes % 60; // total minutes - whole hours
         int totalHours = totalMinutes / 60;
 
-        String details = project._percentageDone + "% done, " + totalHours;
+        String details = project.percentageDone + "% done, " + totalHours;
         if (totalHours == 1) {
             details += " hour and ";
         } else {
@@ -104,7 +102,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     private String createTimeString(Project project) {
-        int timeSpent = project._timeSpentInMillis;
+        int timeSpent = project.timeSpentInMillis;
         int totalSeconds = timeSpent / 1000;
         int littleSeconds = totalSeconds % 60;
         int totalMinutes = totalSeconds / 60;

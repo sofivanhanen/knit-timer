@@ -3,23 +3,23 @@ package com.sofi.knittimer.data;
 // Knitting project class
 public class Project {
 
-    public int _id;
-    public String _name;
-    public int _timeSpentInMillis;
-    public int _percentageDone;
+    public int id;
+    public String name;
+    public int timeSpentInMillis;
+    public int percentageDone;
 
     public Project(int id, String name, int timeSpentInMillis, int percentageDone) {
-        _id = id;
-        _name = name;
-        _timeSpentInMillis = timeSpentInMillis;
-        _percentageDone = percentageDone;
+        this.id = id;
+        this.name = name;
+        this.timeSpentInMillis = timeSpentInMillis;
+        this.percentageDone = percentageDone;
     }
 
     public int timeLeftInMillis() {
-        if (_percentageDone == 0) {
+        if (percentageDone == 0) {
             return 0;
         } else {
-            return Integer.parseInt(((100 - _percentageDone) * (_timeSpentInMillis / _percentageDone)) + "");
+            return Integer.parseInt(((100 - percentageDone) * (timeSpentInMillis / percentageDone)) + "");
         }
     }
 
