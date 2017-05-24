@@ -18,10 +18,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     public ProjectAdapter(Context context) {
         this.context = context;
+        projects = new ArrayList<Project>();
     }
 
     public void swapCursor(Cursor newCursor) {
         if (newCursor == null) {
+            projects = new ArrayList<Project>();
+            this.notifyDataSetChanged();
             return;
         }
         projects = new ArrayList<Project>();
@@ -31,6 +34,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                         newCursor.getInt(2), newCursor.getInt(3)));
             } while (newCursor.moveToNext());
         }
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -55,7 +59,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (projects == null) {return 0;}
+        if (projects == null) {throw new NullPointerException("GetItemCount got has null list");}
         return projects.size();
     }
 
