@@ -4,6 +4,7 @@ package com.sofi.knittimer;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
@@ -13,6 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import com.sofi.knittimer.data.ProjectContract;
@@ -22,8 +26,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;
     private ProgressBar mProgressBar;
-
-    private FloatingActionButton fab;
 
     public static final int ADD_PROJECT_REQUEST = 0;
 
@@ -43,13 +45,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mProgressBar.setVisibility(View.VISIBLE);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startAddProjectActivity();
-            }
-        });
 
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
     }
@@ -111,6 +106,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // mAdapter creates a list of items from the cursor as soon as it gets it.
                 // Therefore, we don't need to call swapCursor(Null) as mAdaptor is not using it anymore.
                 return;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_menu, menu);
+        menu.getItem(0).getIcon().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_menu_item_add:
+                startAddProjectActivity();
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

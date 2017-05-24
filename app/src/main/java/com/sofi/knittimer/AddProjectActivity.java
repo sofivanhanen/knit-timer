@@ -3,7 +3,6 @@ package com.sofi.knittimer;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.sofi.knittimer.data.Project;
 
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -59,7 +56,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_add:
+            case R.id.add_menu_item_add:
                 if (projectName.getText().toString().equals("") || projectName.getText().toString() == null) {
                     // No project name given; show a toast to prompt the user
                     Toast.makeText(getApplicationContext(), "Remember to name your project!",
