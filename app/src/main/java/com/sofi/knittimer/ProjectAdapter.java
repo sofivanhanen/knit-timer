@@ -3,20 +3,29 @@ package com.sofi.knittimer;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.sofi.knittimer.data.Project;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
-    private Context context;
+    private MainActivity context;
     private List<Project> projects;
 
-    public ProjectAdapter(Context context) {
+    private ActionMode mActionMode;
+    private int selectedItemIndex;
+
+    public ProjectAdapter(MainActivity context) {
         this.context = context;
         projects = new ArrayList<Project>();
     }
@@ -27,6 +36,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             this.notifyDataSetChanged();
             return;
         }
+        List<Project> oldProjects = projects;
         projects = new ArrayList<Project>();
         if (newCursor.moveToFirst()) {
             do {
@@ -42,14 +52,64 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View projectView = inflater.inflate(R.layout.project_list_item, parent, false);
+        projectView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mActionMode != null) {
+                    return false;
+                }
+                selectedItemIndex = context.getRecyclerView().getChildLayoutPosition(v);
+                mActionMode = context.startActionMode(new mActionModeCallback());
+                v.setSelected(true);
+                return true;
+            }
+        });
 
         ViewHolder viewHolder = new ViewHolder(projectView);
         return viewHolder;
     }
 
+    private class mActionModeCallback implements ActionMode.Callback {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.main_context_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.main_context_menu_item_delete:
+                    if (context.deleteProject(projects.get(selectedItemIndex)) == 1) {
+                        mode.finish();
+                        projects.remove(selectedItemIndex);
+                        notifyItemRemoved(selectedItemIndex);
+                        return true;
+                    } else {
+                        Log.e("onActionItemClicked: ", "More or less than 1 item deleted!!!");
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (projects == null) { return; }
+        if (projects == null) {
+            return;
+        }
 
         Project project = projects.get(position);
         holder.projectName.setText(project.name);
@@ -59,7 +119,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (projects == null) {throw new NullPointerException("GetItemCount got has null list");}
+        if (projects == null) {
+            throw new NullPointerException("GetItemCount got has null list");
+        }
         return projects.size();
     }
 

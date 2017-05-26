@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -19,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -125,5 +126,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
+
+    public int deleteProject(Project project) {
+        return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI
+                .buildUpon().appendPath(project.id + "").build(),
+                ProjectContract.ProjectEntry._ID + " = ?", new String[]{project.id + ""});
     }
 }

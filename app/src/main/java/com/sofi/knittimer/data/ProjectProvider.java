@@ -20,6 +20,7 @@ public class ProjectProvider extends ContentProvider {
     // TODO: Implement rest of CRUD methods
 
     public static final int CODE_PROJECTS = 100;
+    public static final int CODE_PROJECT_WITH_ID = 101;
 
     private DatabaseHelper mDatabaseHelper;
     private SQLiteDatabase mReadableDatabase;
@@ -32,6 +33,7 @@ public class ProjectProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = ProjectContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, ProjectContract.PATH_PROJECTS, CODE_PROJECTS);
+        matcher.addURI(authority, ProjectContract.PATH_PROJECTS + "/#", CODE_PROJECT_WITH_ID);
 
         return matcher;
     }
@@ -88,7 +90,12 @@ public class ProjectProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        switch (sUriMatcher.match(uri)) {
+            case CODE_PROJECT_WITH_ID:
+                return mWritableDatabase.delete(ProjectContract.ProjectEntry.TABLE_PROJECTS, selection, selectionArgs);
+            default:
+                throw new UnsupportedOperationException("Unknown URI in delete: " + uri.toString());
+        }
     }
 
     @Override
