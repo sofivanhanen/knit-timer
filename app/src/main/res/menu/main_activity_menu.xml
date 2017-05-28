@@ -6,6 +6,6 @@
         android:id="@+id/main_menu_item_add"
         android:title="@string/main_add_menu_item"
         app:showAsAction="always"
-        android:icon="@drawable/ic_add_circle" />
+        android:icon="@drawable/ic_add" />
 
 </menu>

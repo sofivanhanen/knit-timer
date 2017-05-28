@@ -1,73 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorPrimaryDark"
-    android:padding="4dp"
+    android:orientation="horizontal"
     android:layout_marginTop="4dp"
+    android:background="@color/colorPrimaryDark"
+    android:backgroundTint="@color/black_high_opacity"
     android:backgroundTintMode="src_over"
-    android:backgroundTint="@color/black_high_opacity">
+    android:padding="4dp">
 
-    <!-- TODO: Create the fonts and styles for these TextViews -->
-
-    <TextView
-        android:id="@+id/tv_project_name"
-        android:layout_width="match_parent"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:fontFamily="sans-serif-smallcaps"
-        android:gravity="start"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        tools:text="My Cute Socks"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/tv_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_project_name"
-        android:fontFamily="sans-serif-condensed"
-        android:gravity="start"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        tools:text="20% done, 2 hours and 5 minutes left"
-        android:textColor="@color/white_high_opacity"
-        android:textSize="14sp" />
+        <!-- TODO: Create the fonts and styles for these TextViews -->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/tv_details"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp">
+        <TextView
+            android:id="@+id/tv_project_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="start"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:text="My Cute Socks" />
+
+        <TextView
+            android:id="@+id/tv_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_project_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="start"
+            android:textColor="@color/white_high_opacity"
+            android:textSize="14sp"
+            tools:text="20% done, 2 hours and 5 minutes left" />
 
         <TextView
             android:id="@+id/tv_time_spent"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_details"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_weight="1"
-            tools:text="01:34:44"
-            android:gravity="center"
+            android:fontFamily="monospace"
+            android:gravity="start"
             android:textColor="@color/white_high_opacity"
-            android:textSize="48sp"
+            android:textSize="40sp"
             android:typeface="monospace"
-            android:fontFamily="monospace"/>
+            tools:text="01:34:44"
+            android:maxLines="1"/>
 
         <!-- TODO: When user presses this icon, change it to pause and start timer -->
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:tint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_play_circle"
-            android:layout_gravity="center"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/iv_play"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:clickable="true"
+        android:tint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_play_circle" />
+
+</LinearLayout>
