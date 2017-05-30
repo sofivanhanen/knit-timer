@@ -29,9 +29,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     private ActionMode mActionMode;
     private int selectedItemIndex;
 
+    private boolean serviceIsRunning;
+
     public ProjectAdapter(MainActivity context) {
         this.context = context;
         projects = new ArrayList<Project>();
+        serviceIsRunning = false;
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -128,17 +131,19 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(v.getTag().equals(TAG_NOT_CLICKED)) {
+                if(v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
                     mTimerIntent.setData(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
                             .appendPath(project.id + "").build());
                     mTimerIntent.putExtra("Time spent", project.timeSpentInMillis);
                     context.startService(mTimerIntent);
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
                     v.setTag(TAG_CLICKED);
-                } else if (v.getTag().equals(TAG_CLICKED)) {
+                    serviceIsRunning = true;
+                } else if (v.getTag().equals(TAG_CLICKED) && serviceIsRunning) {
                     context.stopService(mTimerIntent);
                     ((ImageView)v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                     v.setTag(TAG_NOT_CLICKED);
+                    serviceIsRunning = false;
                 }
             }
         });
