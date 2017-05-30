@@ -1,7 +1,9 @@
 package com.sofi.knittimer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
@@ -10,9 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sofi.knittimer.data.Project;
+import com.sofi.knittimer.data.ProjectContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,10 +115,33 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             return;
         }
 
-        Project project = projects.get(position);
+        final String TAG_CLICKED = "clicked";
+        final String TAG_NOT_CLICKED = "not clicked";
+
+        final Project project = projects.get(position);
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
+        final Intent mTimerIntent = new Intent(context, TimerService.class);
+        holder.button.setTag(TAG_NOT_CLICKED);
+
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(v.getTag().equals(TAG_NOT_CLICKED)) {
+                    mTimerIntent.setData(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
+                            .appendPath(project.id + "").build());
+                    mTimerIntent.putExtra("Time spent", project.timeSpentInMillis);
+                    context.startService(mTimerIntent);
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    v.setTag(TAG_CLICKED);
+                } else if (v.getTag().equals(TAG_CLICKED)) {
+                    context.stopService(mTimerIntent);
+                    ((ImageView)v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    v.setTag(TAG_NOT_CLICKED);
+                }
+            }
+        });
     }
 
     @Override
@@ -130,6 +157,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         public TextView projectName;
         public TextView details;
         public TextView timeSpent;
+        public ImageView button;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -137,6 +165,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             projectName = (TextView) itemView.findViewById(R.id.tv_project_name);
             details = (TextView) itemView.findViewById(R.id.tv_details);
             timeSpent = (TextView) itemView.findViewById(R.id.tv_time_spent);
+            button = (ImageView) itemView.findViewById(R.id.iv_play);
         }
     }
 

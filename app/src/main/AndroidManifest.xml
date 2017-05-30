@@ -26,6 +26,8 @@
             android:authorities="com.sofi.knittimer.data.projectprovider"
             android:name="com.sofi.knittimer.data.ProjectProvider"
             android:exported="false"/>
+        <service android:name=".TimerService"
+            android:exported="false" />
     </application>
 
 </manifest>
