@@ -1,9 +1,14 @@
 package com.sofi.knittimer;
 
+import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
@@ -23,7 +28,7 @@ import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
-    private MainActivity context;
+    public MainActivity context;
     private List<Project> projects;
 
     private ActionMode mActionMode;
@@ -31,10 +36,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     private boolean serviceIsRunning;
 
+    final String TAG_CLICKED = "clicked";
+    final String TAG_NOT_CLICKED = "not clicked";
+
     public ProjectAdapter(MainActivity context) {
         this.context = context;
         projects = new ArrayList<Project>();
         serviceIsRunning = false;
+        IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
+        filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
+        LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(), filter);
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -51,6 +62,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                         newCursor.getInt(2), newCursor.getInt(3)));
             } while (newCursor.moveToNext());
         }
+        this.notifyDataSetChanged();
+    }
+
+    public void updateData() {
         this.notifyDataSetChanged();
     }
 
@@ -118,30 +133,25 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             return;
         }
 
-        final String TAG_CLICKED = "clicked";
-        final String TAG_NOT_CLICKED = "not clicked";
-
         final Project project = projects.get(position);
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
         final Intent mTimerIntent = new Intent(context, TimerService.class);
-        holder.button.setTag(TAG_NOT_CLICKED);
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
-                    mTimerIntent.setData(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
-                            .appendPath(project.id + "").build());
-                    mTimerIntent.putExtra("Time spent", project.timeSpentInMillis);
+                if (v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
+                    mTimerIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
+                    mTimerIntent.putExtra(TimerService.EXTRA_KEY_TIME_LEFT, project.timeSpentInMillis);
                     context.startService(mTimerIntent);
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
                     v.setTag(TAG_CLICKED);
                     serviceIsRunning = true;
                 } else if (v.getTag().equals(TAG_CLICKED) && serviceIsRunning) {
                     context.stopService(mTimerIntent);
-                    ((ImageView)v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                     v.setTag(TAG_NOT_CLICKED);
                     serviceIsRunning = false;
                 }
@@ -173,6 +183,40 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             button = (ImageView) itemView.findViewById(R.id.iv_play);
         }
     }
+
+    public class TimerBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("onReceive", "received something");
+            int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
+            Project mProject = null;
+            for (Project project : projects) {
+                if (project.id == id) {
+                    mProject = project;
+                }
+            }
+            mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
+            if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE)) {
+                Log.i("onReceive", "was update");
+                notifyDataSetChanged();
+            } else if (intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
+                Log.i("onReceive", "was finish");
+                ContentValues values = new ContentValues();
+                values.put(ProjectContract.ProjectEntry._NAME, mProject.name);
+                values.put(ProjectContract.ProjectEntry._PERCENT_DONE, mProject.percentageDone);
+                values.put(ProjectContract.ProjectEntry._TIME_SPENT, mProject.timeSpentInMillis);
+                Log.i("onReceive", "About the project: " + mProject.name + " " + mProject.id + " " + mProject.timeSpentInMillis + " " + mProject.percentageDone);
+                int val = context.getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
+                                .appendPath(mProject.id + "").build(), values,
+                        ProjectContract.ProjectEntry._ID + " = ?",
+                        new String[]{mProject.id + ""});
+                updateData();
+                Log.i("onReceive", "Updated " + val + " projects");
+            }
+        }
+    }
+
+    ;
 
     private String createDetailsString(Project project) {
         int timeRemaining = project.timeLeftInMillis();

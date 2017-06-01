@@ -100,6 +100,11 @@ public class ProjectProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        switch (sUriMatcher.match(uri)) {
+            case CODE_PROJECT_WITH_ID:
+                return mWritableDatabase.update(ProjectContract.ProjectEntry.TABLE_PROJECTS, values, selection, selectionArgs);
+            default:
+                throw new UnsupportedOperationException("Unknown URI to update: " + uri.toString());
+        }
     }
 }

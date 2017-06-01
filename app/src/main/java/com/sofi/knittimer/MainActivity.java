@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -136,5 +137,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI
                 .buildUpon().appendPath(project.id + "").build(),
                 ProjectContract.ProjectEntry._ID + " = ?", new String[]{project.id + ""});
+    }
+
+    public int updateProject(Project project) {
+        ContentValues values = new ContentValues();
+        values.put(ProjectContract.ProjectEntry._NAME, project.name);
+        values.put(ProjectContract.ProjectEntry._PERCENT_DONE, project.percentageDone);
+        values.put(ProjectContract.ProjectEntry._TIME_SPENT, project.timeSpentInMillis);
+        return getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
+                .appendPath(project.id + "").build(), values,
+                ProjectContract.ProjectEntry._ID + " = ?",
+                new String[]{project.id + ""});
     }
 }

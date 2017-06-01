@@ -28,6 +28,14 @@
             android:exported="false"/>
         <service android:name=".TimerService"
             android:exported="false" />
+        <receiver android:name=".ProjectAdapter$TimerBroadcastReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.sofi.knittimer.ACTION_UPDATE"/>
+                <action android:name="com.sofi.knittimer.ACTION_FINISH"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
