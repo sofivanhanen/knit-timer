@@ -28,7 +28,7 @@ import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
-    public MainActivity context;
+    public MainActivity mContext;
     private List<Project> projects;
 
     private ActionMode mActionMode;
@@ -39,8 +39,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     final String TAG_CLICKED = "clicked";
     final String TAG_NOT_CLICKED = "not clicked";
 
+    public Intent timerServiceIntent;
+
     public ProjectAdapter(MainActivity context) {
-        this.context = context;
+        mContext = context;
         projects = new ArrayList<Project>();
         serviceIsRunning = false;
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
@@ -67,7 +69,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
 
         View projectView = inflater.inflate(R.layout.project_list_item, parent, false);
         projectView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -76,8 +78,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 if (mActionMode != null) {
                     return false;
                 }
-                selectedItemIndex = context.getRecyclerView().getChildLayoutPosition(v);
-                mActionMode = context.startActionMode(new mActionModeCallback());
+                selectedItemIndex = mContext.getRecyclerView().getChildLayoutPosition(v);
+                mActionMode = mContext.startActionMode(new mActionModeCallback());
                 v.setSelected(true);
                 return true;
             }
@@ -104,7 +106,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.main_context_menu_item_delete:
-                    if (context.deleteProject(projects.get(selectedItemIndex)) == 1) {
+                    if (mContext.deleteProject(projects.get(selectedItemIndex)) == 1) {
                         mode.finish();
                         projects.remove(selectedItemIndex);
                         notifyItemRemoved(selectedItemIndex);
@@ -133,7 +135,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
-        final Intent mTimerIntent = new Intent(context, TimerService.class);
+        final Intent mTimerIntent = new Intent(mContext, TimerService.class);
+        timerServiceIntent = mTimerIntent;
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,13 +144,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 if (v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
                     mTimerIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
                     mTimerIntent.putExtra(TimerService.EXTRA_KEY_TIME_LEFT, project.timeSpentInMillis);
-                    context.startService(mTimerIntent);
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    mContext.startService(mTimerIntent);
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_pause_circle));
                     v.setTag(TAG_CLICKED);
                     serviceIsRunning = true;
                 } else if (v.getTag().equals(TAG_CLICKED) && serviceIsRunning) {
-                    context.stopService(mTimerIntent);
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    mContext.stopService(mTimerIntent);
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_circle));
                     v.setTag(TAG_NOT_CLICKED);
                     serviceIsRunning = false;
                 }
@@ -192,16 +195,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                     }
                 }
 
-                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
-                ContentValues values = new ContentValues();
-                values.put(ProjectContract.ProjectEntry._NAME, mProject.name);
-                values.put(ProjectContract.ProjectEntry._PERCENT_DONE, mProject.percentageDone);
-                values.put(ProjectContract.ProjectEntry._TIME_SPENT, mProject.timeSpentInMillis);
-                context.getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
-                                .appendPath(mProject.id + "").build(), values,
-                        ProjectContract.ProjectEntry._ID + " = ?",
-                        new String[]{mProject.id + ""});
+                if (mProject == null) { // Couldn't find project with given id - project was probably deleted
+                    context.stopService(timerServiceIntent);
+                    serviceIsRunning = false;
+                    return;
+                }
 
+                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
+                mContext.updateProject(mProject);
                 notifyDataSetChanged();
             }
         }
