@@ -1,12 +1,10 @@
 package com.sofi.knittimer;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,20 +19,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sofi.knittimer.data.Project;
-import com.sofi.knittimer.data.ProjectContract;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
-    public MainActivity mContext;
-    private List<Project> projects;
+    public MainActivity activityContext;
+    public List<Project> projects;
 
     private ActionMode mActionMode;
     private int selectedItemIndex;
 
     private boolean serviceIsRunning;
+
+    public Dialogs dialogs;
 
     final String TAG_CLICKED = "clicked";
     final String TAG_NOT_CLICKED = "not clicked";
@@ -42,9 +41,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     public Intent timerServiceIntent;
 
     public ProjectAdapter(MainActivity context) {
-        mContext = context;
+        activityContext = context;
         projects = new ArrayList<Project>();
         serviceIsRunning = false;
+        dialogs = new Dialogs(this);
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
         LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(), filter);
@@ -69,7 +69,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(activityContext);
 
         View projectView = inflater.inflate(R.layout.project_list_item, parent, false);
         projectView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -78,8 +78,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 if (mActionMode != null) {
                     return false;
                 }
-                selectedItemIndex = mContext.getRecyclerView().getChildLayoutPosition(v);
-                mActionMode = mContext.startActionMode(new mActionModeCallback());
+                selectedItemIndex = activityContext.getRecyclerView().getChildLayoutPosition(v);
+                mActionMode = activityContext.startActionMode(new mActionModeCallback());
                 v.setSelected(true);
                 return true;
             }
@@ -106,14 +106,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.main_context_menu_item_delete:
-                    if (mContext.deleteProject(projects.get(selectedItemIndex)) == 1) {
-                        mode.finish();
-                        projects.remove(selectedItemIndex);
-                        notifyItemRemoved(selectedItemIndex);
-                        return true;
-                    } else {
-                        Log.e("onActionItemClicked", "More or less than 1 item deleted!!!");
-                    }
+                    Dialogs.DeleteProjectDialogFragment fragment =
+                            dialogs.getNewDeleteProjectDialogFragment
+                                    (projects.get(selectedItemIndex), selectedItemIndex, mode);
+                    fragment.show(activityContext.getFragmentManager(), "delete");
                 default:
                     return false;
             }
@@ -135,7 +131,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
-        final Intent mTimerIntent = new Intent(mContext, TimerService.class);
+        final Intent mTimerIntent = new Intent(activityContext, TimerService.class);
         timerServiceIntent = mTimerIntent;
 
         holder.button.setOnClickListener(new View.OnClickListener() {
@@ -144,13 +140,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 if (v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
                     mTimerIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
                     mTimerIntent.putExtra(TimerService.EXTRA_KEY_TIME_LEFT, project.timeSpentInMillis);
-                    mContext.startService(mTimerIntent);
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_pause_circle));
+                    activityContext.startService(mTimerIntent);
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
                     v.setTag(TAG_CLICKED);
                     serviceIsRunning = true;
                 } else if (v.getTag().equals(TAG_CLICKED) && serviceIsRunning) {
-                    mContext.stopService(mTimerIntent);
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_circle));
+                    activityContext.stopService(mTimerIntent);
+                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
                     v.setTag(TAG_NOT_CLICKED);
                     serviceIsRunning = false;
                 }
@@ -202,7 +198,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 }
 
                 mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
-                mContext.updateProject(mProject);
+                activityContext.updateProject(mProject);
                 notifyDataSetChanged();
             }
         }
