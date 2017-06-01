@@ -65,10 +65,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         this.notifyDataSetChanged();
     }
 
-    public void updateData() {
-        this.notifyDataSetChanged();
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -114,7 +110,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                         notifyItemRemoved(selectedItemIndex);
                         return true;
                     } else {
-                        Log.e("onActionItemClicked: ", "More or less than 1 item deleted!!!");
+                        Log.e("onActionItemClicked", "More or less than 1 item deleted!!!");
                     }
                 default:
                     return false;
@@ -187,31 +183,26 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     public class TimerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("onReceive", "received something");
-            int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
-            Project mProject = null;
-            for (Project project : projects) {
-                if (project.id == id) {
-                    mProject = project;
+            if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE) || intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
+                int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
+                Project mProject = null;
+                for (Project project : projects) {
+                    if (project.id == id) {
+                        mProject = project;
+                    }
                 }
-            }
-            mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
-            if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE)) {
-                Log.i("onReceive", "was update");
-                notifyDataSetChanged();
-            } else if (intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
-                Log.i("onReceive", "was finish");
+
+                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
                 ContentValues values = new ContentValues();
                 values.put(ProjectContract.ProjectEntry._NAME, mProject.name);
                 values.put(ProjectContract.ProjectEntry._PERCENT_DONE, mProject.percentageDone);
                 values.put(ProjectContract.ProjectEntry._TIME_SPENT, mProject.timeSpentInMillis);
-                Log.i("onReceive", "About the project: " + mProject.name + " " + mProject.id + " " + mProject.timeSpentInMillis + " " + mProject.percentageDone);
-                int val = context.getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
+                context.getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
                                 .appendPath(mProject.id + "").build(), values,
                         ProjectContract.ProjectEntry._ID + " = ?",
                         new String[]{mProject.id + ""});
-                updateData();
-                Log.i("onReceive", "Updated " + val + " projects");
+
+                notifyDataSetChanged();
             }
         }
     }

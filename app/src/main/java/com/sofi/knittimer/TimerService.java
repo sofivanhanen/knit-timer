@@ -34,19 +34,17 @@ public class TimerService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("TimerService", "onCreate called");
         super.onCreate();
         handler.removeCallbacks(sendUpdatesToUI);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("TimerService", "onStartCommand called");
         initialTime = SystemClock.uptimeMillis();
         projectId = intent.getIntExtra(EXTRA_KEY_ID, 0);
         initialTimeSpent = intent.getIntExtra(EXTRA_KEY_TIME_LEFT, 0);
         handler.postDelayed(sendUpdatesToUI, 1000);
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     private Runnable sendUpdatesToUI = new Runnable() {
@@ -58,8 +56,6 @@ public class TimerService extends Service {
     };
 
     private void sendTimerInfo(String action) {
-        Log.i("TimerService", "sendTimerInfo called");
-
         timeInMillis = SystemClock.uptimeMillis() - initialTime;
 
         Intent intent = new Intent(action);
@@ -73,7 +69,6 @@ public class TimerService extends Service {
     public void onDestroy() {
         sendTimerInfo(BROADCAST_ACTION_FINISH);
         handler.removeCallbacks(sendUpdatesToUI);
-        Log.i("TimerService", "onDestroy called");
         super.onDestroy();
     }
 
