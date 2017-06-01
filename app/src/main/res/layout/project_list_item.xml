@@ -64,7 +64,7 @@
             android:fontFamily="monospace"
             android:gravity="start"
             android:textColor="@color/white_high_opacity"
-            android:textSize="40sp"
+            android:textSize="36sp"
             android:typeface="monospace"
             tools:text="01:34:44"
             android:maxLines="1"/>
