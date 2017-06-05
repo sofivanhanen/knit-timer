@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,6 +36,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public static final String PROJECT_NAME_KEY = "project name";
 
+    private static final String SERVICE_RUNNING_KEY = "service running";
+
+    public boolean serviceIsRunning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mProgressBar.setVisibility(View.VISIBLE);
 
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
+                serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
+            }
+        } else {
+            serviceIsRunning = false;
+        }
     }
 
     private void startAddProjectActivity() {
@@ -68,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, values);
                         return;
                     default:
-                        throw new UnsupportedOperationException("Activity returned an unsupported result code");
+                        return;
                 }
             default:
                 throw new UnsupportedOperationException("Unknown request code");
@@ -78,6 +91,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SERVICE_RUNNING_KEY, serviceIsRunning);
     }
 
     @Override
@@ -103,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch(loader.getId()) {
+        switch (loader.getId()) {
             case ID_PROJECTS_LOADER:
                 // mAdapter creates a list of items from the cursor as soon as it gets it.
                 // Therefore, we don't need to call swapCursor(Null) as mAdaptor is not using it anymore.
@@ -135,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public int deleteProject(Project project) {
         return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI
-                .buildUpon().appendPath(project.id + "").build(),
+                        .buildUpon().appendPath(project.id + "").build(),
                 ProjectContract.ProjectEntry._ID + " = ?", new String[]{project.id + ""});
     }
 
@@ -145,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(ProjectContract.ProjectEntry._PERCENT_DONE, project.percentageDone);
         values.put(ProjectContract.ProjectEntry._TIME_SPENT, project.timeSpentInMillis);
         return getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
-                .appendPath(project.id + "").build(), values,
+                        .appendPath(project.id + "").build(), values,
                 ProjectContract.ProjectEntry._ID + " = ?",
                 new String[]{project.id + ""});
     }

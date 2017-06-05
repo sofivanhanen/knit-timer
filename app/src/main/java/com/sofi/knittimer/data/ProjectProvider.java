@@ -17,8 +17,6 @@ import android.support.annotation.Nullable;
 
 public class ProjectProvider extends ContentProvider {
 
-    // TODO: Implement rest of CRUD methods
-
     public static final int CODE_PROJECTS = 100;
     public static final int CODE_PROJECT_WITH_ID = 101;
 

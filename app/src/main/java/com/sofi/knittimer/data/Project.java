@@ -1,5 +1,7 @@
 package com.sofi.knittimer.data;
 
+import android.widget.TextView;
+
 // Knitting project class
 public class Project {
 
@@ -7,6 +9,8 @@ public class Project {
     public String name;
     public int timeSpentInMillis;
     public int percentageDone;
+
+    public TextView timeTv;
 
     public Project(int id, String name, int timeSpentInMillis, int percentageDone) {
         this.id = id;

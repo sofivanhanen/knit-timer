@@ -31,8 +31,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     private ActionMode mActionMode;
     private int selectedItemIndex;
 
-    private boolean serviceIsRunning;
-
     public Dialogs dialogs;
 
     final String TAG_CLICKED = "clicked";
@@ -43,7 +41,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     public ProjectAdapter(MainActivity context) {
         activityContext = context;
         projects = new ArrayList<Project>();
-        serviceIsRunning = false;
         dialogs = new Dialogs(this);
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
@@ -123,32 +120,43 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         if (projects == null) {
             return;
         }
 
         final Project project = projects.get(position);
+        project.timeTv = holder.timeSpent;
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
-        final Intent mTimerIntent = new Intent(activityContext, TimerService.class);
-        timerServiceIntent = mTimerIntent;
+
+        if (!activityContext.serviceIsRunning) {
+            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
+        } else if (timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) != project.id) {
+            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
+        } else {
+            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
+            holder.button.setTag(TAG_CLICKED);
+        }
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.getTag().equals(TAG_NOT_CLICKED) && !serviceIsRunning) {
-                    mTimerIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
-                    mTimerIntent.putExtra(TimerService.EXTRA_KEY_TIME_LEFT, project.timeSpentInMillis);
-                    activityContext.startService(mTimerIntent);
+                if (v.getTag().equals(TAG_NOT_CLICKED) && !activityContext.serviceIsRunning) {
+                    timerServiceIntent = new Intent(activityContext, TimerService.class);
+                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
+                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME, project.timeSpentInMillis);
+                    activityContext.startService(timerServiceIntent);
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
                     v.setTag(TAG_CLICKED);
-                    serviceIsRunning = true;
-                } else if (v.getTag().equals(TAG_CLICKED) && serviceIsRunning) {
-                    activityContext.stopService(mTimerIntent);
+                    activityContext.serviceIsRunning = true;
+                } else if (v.getTag().equals(TAG_CLICKED) && activityContext.serviceIsRunning) {
+                    activityContext.stopService(timerServiceIntent);
+                    timerServiceIntent = null;
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
                     v.setTag(TAG_NOT_CLICKED);
-                    serviceIsRunning = false;
+                    activityContext.serviceIsRunning = false;
                 }
             }
         });
@@ -185,21 +193,25 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE) || intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
                 int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
                 Project mProject = null;
+                int index = -1;
                 for (Project project : projects) {
+                    index++;
                     if (project.id == id) {
                         mProject = project;
+                        break;
                     }
                 }
 
                 if (mProject == null) { // Couldn't find project with given id - project was probably deleted
-                    context.stopService(timerServiceIntent);
-                    serviceIsRunning = false;
+                    context.stopService(new Intent(activityContext, TimerService.class));
+                    timerServiceIntent = null;
+                    activityContext.serviceIsRunning = false;
                     return;
                 }
 
-                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TIME_LEFT, 0);
+                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
+                mProject.timeTv.setText(createTimeString(mProject));
                 activityContext.updateProject(mProject);
-                notifyDataSetChanged();
             }
         }
     }

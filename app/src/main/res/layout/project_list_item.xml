@@ -69,8 +69,6 @@
             tools:text="01:34:44"
             android:maxLines="1"/>
 
-        <!-- TODO: When user presses this icon, change it to pause and start timer -->
-
     </RelativeLayout>
 
     <ImageView
