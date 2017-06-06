@@ -23,7 +23,7 @@ import com.sofi.knittimer.data.Project;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
+public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
     public MainActivity activityContext;
     public List<Project> projects;
@@ -65,7 +65,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(activityContext);
 
         View projectView = inflater.inflate(R.layout.project_list_item, parent, false);
@@ -82,7 +82,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             }
         });
 
-        ViewHolder viewHolder = new ViewHolder(projectView);
+        ProjectViewHolder viewHolder = new ProjectViewHolder(projectView);
         return viewHolder;
     }
 
@@ -119,14 +119,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ProjectViewHolder holder, int position) {
 
         if (projects == null) {
             return;
         }
 
         final Project project = projects.get(position);
-        project.timeTv = holder.timeSpent;
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
@@ -137,25 +136,25 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
         } else {
             holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
-            holder.button.setTag(TAG_CLICKED);
+            project.serviceRunning = true;
         }
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.getTag().equals(TAG_NOT_CLICKED) && !activityContext.serviceIsRunning) {
+                if (!project.serviceRunning && !activityContext.serviceIsRunning) {
                     timerServiceIntent = new Intent(activityContext, TimerService.class);
                     timerServiceIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
                     timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME, project.timeSpentInMillis);
                     activityContext.startService(timerServiceIntent);
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
-                    v.setTag(TAG_CLICKED);
+                    project.serviceRunning = true;
                     activityContext.serviceIsRunning = true;
-                } else if (v.getTag().equals(TAG_CLICKED) && activityContext.serviceIsRunning) {
+                } else if (project.serviceRunning && activityContext.serviceIsRunning) {
                     activityContext.stopService(timerServiceIntent);
                     timerServiceIntent = null;
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
-                    v.setTag(TAG_NOT_CLICKED);
+                    project.serviceRunning = false;
                     activityContext.serviceIsRunning = false;
                 }
             }
@@ -170,14 +169,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         return projects.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         public TextView projectName;
         public TextView details;
         public TextView timeSpent;
         public ImageView button;
 
-        public ViewHolder(View itemView) {
+        public ProjectViewHolder(View itemView) {
             super(itemView);
 
             projectName = (TextView) itemView.findViewById(R.id.tv_project_name);
@@ -210,13 +209,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 }
 
                 mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
-                mProject.timeTv.setText(createTimeString(mProject));
+                notifyItemChanged(index);
                 activityContext.updateProject(mProject);
             }
         }
     }
 
-    ;
+
 
     private String createDetailsString(Project project) {
         int timeRemaining = project.timeLeftInMillis();

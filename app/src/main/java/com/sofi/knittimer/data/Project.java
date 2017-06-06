@@ -10,13 +10,14 @@ public class Project {
     public int timeSpentInMillis;
     public int percentageDone;
 
-    public TextView timeTv;
+    public boolean serviceRunning;
 
     public Project(int id, String name, int timeSpentInMillis, int percentageDone) {
         this.id = id;
         this.name = name;
         this.timeSpentInMillis = timeSpentInMillis;
         this.percentageDone = percentageDone;
+        serviceRunning = false;
     }
 
     public int timeLeftInMillis() {
