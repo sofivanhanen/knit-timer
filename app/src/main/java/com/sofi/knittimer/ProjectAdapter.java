@@ -33,9 +33,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public Dialogs dialogs;
 
-    final String TAG_CLICKED = "clicked";
-    final String TAG_NOT_CLICKED = "not clicked";
-
     public Intent timerServiceIntent;
 
     public ProjectAdapter(MainActivity context) {
@@ -119,7 +116,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public void onBindViewHolder(ProjectViewHolder holder, int position) {
+    public void onBindViewHolder(ProjectViewHolder holder, final int position) {
 
         if (projects == null) {
             return;
@@ -156,6 +153,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
                     project.serviceRunning = false;
                     activityContext.serviceIsRunning = false;
+                    dialogs.getNewPauseProjectDialogFragment(project, position)
+                            .show(activityContext.getFragmentManager(), "pause");
                 }
             }
         });
@@ -218,6 +217,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
 
     private String createDetailsString(Project project) {
+        if (project.percentageDone == 100) {
+            return "100% done. Project finished! Yay!!";
+        }
+
         int timeRemaining = project.timeLeftInMillis();
 
         if (timeRemaining == 0) { // Project hasn't been started (% is still set to 0)
