@@ -8,10 +8,12 @@
 
     <string name="add_project_name">Project name</string>
     <string name="add_project_time">Time spent on project</string>
+    <string name="add_project_percent">Percentage done</string>
     <string name="add_menu_item">Add</string>
 
     <string-array name="spinner_array">
-        <item>Fresh</item> <!-- TODO: Add an option for adding projects one has already worked on -->
+        <item>Brand New</item> <!-- If this order is changed, changes must be made in AddProjectActivity -->
+        <item>Started</item>
     </string-array>
 
     <string name="dialog_message_delete">Are you sure you want to delete this project?</string>

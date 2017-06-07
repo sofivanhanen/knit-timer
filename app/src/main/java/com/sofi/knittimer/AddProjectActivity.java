@@ -19,6 +19,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     private EditText projectName;
     private Spinner spinner;
 
+    private final static int ARRAY_INDEX_BRAND_NEW = 0;
+    private final static int ARRAY_INDEX_STARTED = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +41,11 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // TODO: Once there are multiple choices, make it so that selecting the "already started"
-        // project type starts a dialog where the user chooses how far the project is using NumberPickers
+        if (position == ARRAY_INDEX_STARTED) {
+            findViewById(R.id.layout_details).setVisibility(View.VISIBLE);
+        } else if (position == ARRAY_INDEX_BRAND_NEW) {
+            findViewById(R.id.layout_details).setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -65,13 +71,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                     return true;
                 } else {
                     switch (spinner.getSelectedItemPosition()) {
-                        case 0: // Spinner set to 'fresh'. TODO: soft-code this.
+                        case ARRAY_INDEX_BRAND_NEW:
                             // With this intent, we're able to return data (the project name) to the MainActivity
                             Intent intent = new Intent(this, this.getClass());
                             intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;
+                        case ARRAY_INDEX_STARTED:
+
                     }
                 }
             case android.R.id.home:

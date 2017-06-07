@@ -8,4 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AddProjectActivityItem" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textSize">36sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AddProjectActivityItem.Time">
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <style name="AddProjectActivityItem.Definition">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/white_high_opacity</item>
+    </style>
+
 </resources>
