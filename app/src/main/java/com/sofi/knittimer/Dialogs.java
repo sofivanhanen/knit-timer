@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import com.sofi.knittimer.data.Project;
 
@@ -17,11 +18,14 @@ import com.sofi.knittimer.data.Project;
 
 public class Dialogs {
 
-    ProjectAdapter mContext;
+    ProjectAdapter projectAdapterContext;
+    AddProjectActivity addProjectActivityContext;
 
     public Dialogs(ProjectAdapter context) {
-        mContext = context;
+        projectAdapterContext = context;
     }
+
+    public Dialogs(AddProjectActivity context) {addProjectActivityContext = context;}
 
     public DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
         return new DeleteProjectDialogFragment(project, index, actionMode);
@@ -29,6 +33,10 @@ public class Dialogs {
 
     public PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
         return new PauseProjectDialogFragment(project, index);
+    }
+
+    public EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
+        return new EditTimeDialogFragment(hours, minutes, seconds);
     }
 
     public class DeleteProjectDialogFragment extends DialogFragment {
@@ -50,9 +58,9 @@ public class Dialogs {
                     .setPositiveButton(R.string.dialog_button_delete, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (mContext.activityContext.deleteProject(mProject) >= 1) {
-                                mContext.projects.remove(mIndex);
-                                mContext.notifyItemRemoved(mIndex);
+                            if (projectAdapterContext.activityContext.deleteProject(mProject) >= 1) {
+                                projectAdapterContext.projects.remove(mIndex);
+                                projectAdapterContext.notifyItemRemoved(mIndex);
                             }
                             if (mActionMode != null) {
                                 mActionMode.finish();
@@ -81,7 +89,7 @@ public class Dialogs {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            View view = mContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
+            View view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
             final NumberPicker numberPicker = (NumberPicker) view.findViewById(R.id.number_picker);
             numberPicker.setMaxValue(100);
             numberPicker.setMinValue(0);
@@ -92,8 +100,71 @@ public class Dialogs {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mProject.percentageDone = numberPicker.getValue();
-                            if (mContext.activityContext.updateProject(mProject) >= 1) {
-                                mContext.notifyItemChanged(mIndex);
+                            if (projectAdapterContext.activityContext.updateProject(mProject) >= 1) {
+                                projectAdapterContext.notifyItemChanged(mIndex);
+                            }
+                        }
+                    }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            Dialog dialog = builder.create();
+            return dialog;
+        }
+    }
+
+    public class EditTimeDialogFragment extends DialogFragment {
+
+        private TextView hours;
+        private TextView minutes;
+        private TextView seconds;
+
+        public EditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
+            this.hours = hours;
+            this.minutes = minutes;
+            this.seconds = seconds;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            View view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_edit_time, null);
+
+            final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);
+            npHours.setMaxValue(999);
+            npHours.setMinValue(0);
+            npHours.setValue(Integer.parseInt(hours.getText() + ""));
+
+            final NumberPicker npMinutes = (NumberPicker) view.findViewById(R.id.np_minutes);
+            npMinutes.setMaxValue(59);
+            npMinutes.setMinValue(0);
+            npMinutes.setValue(Integer.parseInt(minutes.getText() + ""));
+
+            final NumberPicker npSeconds = (NumberPicker) view.findViewById(R.id.np_seconds);
+            npSeconds.setMaxValue(59);
+            npSeconds.setMinValue(0);
+            npSeconds.setValue(Integer.parseInt(seconds.getText() + ""));
+
+            builder.setMessage(R.string.dialog_message_edit_time)
+                    .setView(view)
+                    .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (npHours.getValue() < 10) {
+                                hours.setText("0" + npHours.getValue());
+                            } else {
+                                hours.setText(npHours.getValue() + "");
+                            }
+                            if (npMinutes.getValue() < 10) {
+                                minutes.setText("0" + npMinutes.getValue());
+                            } else {
+                                minutes.setText(npMinutes.getValue() + "");
+                            }
+                            if (npSeconds.getValue() < 10) {
+                                seconds.setText("0" + npSeconds.getValue());
+                            } else {
+                                seconds.setText(npSeconds.getValue() + "");
                             }
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {

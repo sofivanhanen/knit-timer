@@ -11,13 +11,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText projectName;
     private Spinner spinner;
+
+    private Dialogs dialogs;
+
+    private LinearLayout timeSpentLayout;
 
     private final static int ARRAY_INDEX_BRAND_NEW = 0;
     private final static int ARRAY_INDEX_STARTED = 1;
@@ -37,6 +43,21 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        dialogs = new Dialogs(this);
+
+        setOnClickListeners();
+    }
+
+    private void setOnClickListeners() {
+        timeSpentLayout = (LinearLayout) findViewById(R.id.layout_time_spent);
+        timeSpentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogs.getNewEditTimeDialogFragment((TextView) findViewById(R.id.tv_hours),
+                        (TextView) findViewById(R.id.tv_minutes),
+                        (TextView) findViewById(R.id.tv_seconds)).show(getFragmentManager(), "edit time");
+            }
+        });
     }
 
     @Override
@@ -44,7 +65,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         if (position == ARRAY_INDEX_STARTED) {
             findViewById(R.id.layout_details).setVisibility(View.VISIBLE);
         } else if (position == ARRAY_INDEX_BRAND_NEW) {
-            findViewById(R.id.layout_details).setVisibility(View.INVISIBLE);
+            findViewById(R.id.layout_details).setVisibility(View.GONE);
         }
     }
 
@@ -79,7 +100,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                             finish();
                             return true;
                         case ARRAY_INDEX_STARTED:
-
+                            // Get values from text views and send them to mainactivity
                     }
                 }
             case android.R.id.home:
