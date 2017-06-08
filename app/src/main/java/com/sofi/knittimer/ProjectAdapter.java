@@ -55,7 +55,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         if (newCursor.moveToFirst()) {
             do {
                 projects.add(new Project(newCursor.getInt(0), newCursor.getString(1),
-                        newCursor.getInt(2), newCursor.getInt(3)));
+                        newCursor.getLong(2), newCursor.getInt(3)));
             } while (newCursor.moveToNext());
         }
         this.notifyDataSetChanged();
@@ -207,7 +207,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     return;
                 }
 
-                mProject.timeSpentInMillis = intent.getIntExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
+                mProject.timeSpentInMillis = intent.getLongExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
                 notifyItemChanged(index);
                 activityContext.updateProject(mProject);
             }
@@ -221,16 +221,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             return "100% done. Project finished! Yay!!";
         }
 
-        int timeRemaining = project.timeLeftInMillis();
+        long timeRemaining = project.timeLeftInMillis();
 
         if (timeRemaining == 0) { // Project hasn't been started (% is still set to 0)
             return "0% done. Let's get to work!";
         }
 
-        int totalSeconds = timeRemaining / 1000;
-        int totalMinutes = totalSeconds / 60;
-        int littleMinutes = totalMinutes % 60; // total minutes - whole hours
-        int totalHours = totalMinutes / 60;
+        long totalSeconds = timeRemaining / 1000;
+        long totalMinutes = totalSeconds / 60;
+        long littleMinutes = totalMinutes % 60; // total minutes - whole hours
+        long totalHours = totalMinutes / 60;
 
         String details = project.percentageDone + "% done, " + totalHours;
         if (totalHours == 1) {
@@ -248,12 +248,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     private String createTimeString(Project project) {
-        int timeSpent = project.timeSpentInMillis;
-        int totalSeconds = timeSpent / 1000;
-        int littleSeconds = totalSeconds % 60;
-        int totalMinutes = totalSeconds / 60;
-        int littleMinutes = totalMinutes % 60;
-        int totalHours = totalMinutes / 60;
+        long timeSpent = project.timeSpentInMillis;
+        long totalSeconds = timeSpent / 1000;
+        long littleSeconds = totalSeconds % 60;
+        long totalMinutes = totalSeconds / 60;
+        long littleMinutes = totalMinutes % 60;
+        long totalHours = totalMinutes / 60;
 
         String returnString;
         if (totalHours < 10) {

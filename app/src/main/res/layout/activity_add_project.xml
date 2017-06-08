@@ -117,7 +117,8 @@
             android:text="0%"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_how_much_done"
-            style="@style/AddProjectActivityItem"/>
+            style="@style/AddProjectActivityItem"
+            android:tag="0"/> <!-- We use a tag to keep track of input so we don't have to parse the actual text -->
 
     </android.support.constraint.ConstraintLayout>
 

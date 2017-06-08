@@ -24,6 +24,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     private Dialogs dialogs;
 
     private LinearLayout timeSpentLayout;
+    private TextView percentageDoneTv;
 
     private final static int ARRAY_INDEX_BRAND_NEW = 0;
     private final static int ARRAY_INDEX_STARTED = 1;
@@ -56,6 +57,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                 dialogs.getNewEditTimeDialogFragment((TextView) findViewById(R.id.tv_hours),
                         (TextView) findViewById(R.id.tv_minutes),
                         (TextView) findViewById(R.id.tv_seconds)).show(getFragmentManager(), "edit time");
+            }
+        });
+
+        percentageDoneTv = (TextView) findViewById(R.id.tv_percent);
+        percentageDoneTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogs.getNewPauseProjectDialogFragment(percentageDoneTv)
+                        .show(getFragmentManager(), "edit percentage");
             }
         });
     }
@@ -96,11 +106,19 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                             // With this intent, we're able to return data (the project name) to the MainActivity
                             Intent intent = new Intent(this, this.getClass());
                             intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
+                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0);
+                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0);
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;
                         case ARRAY_INDEX_STARTED:
-                            // Get values from text views and send them to mainactivity
+                            Intent sIntent = new Intent(this, this.getClass());
+                            sIntent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
+                            sIntent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis() + "");
+                            sIntent.putExtra(MainActivity.PROJECT_PERCENT_KEY, percentageDoneTv.getTag().toString());
+                            setResult(RESULT_OK, sIntent);
+                            finish();
+                            return true;
                     }
                 }
             case android.R.id.home:
@@ -109,5 +127,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private long getTimeSpentInMillis() {
+        long value = Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_hours))
+                .getText().toString()) * 1000 * 60 * 60;
+        value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_minutes))
+                .getText().toString()) * 1000 * 60;
+        value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_seconds))
+                .getText().toString()) * 1000;
+        return value;
     }
 }

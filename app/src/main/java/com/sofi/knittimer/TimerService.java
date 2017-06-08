@@ -25,7 +25,7 @@ public class TimerService extends Service {
     private long timeInMillis = 0L;
 
     private int projectId;
-    private int initialTimeSpent;
+    private long initialTimeSpent;
 
     @Override
     public void onCreate() {
@@ -37,7 +37,7 @@ public class TimerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         initialTime = SystemClock.uptimeMillis();
         projectId = intent.getIntExtra(EXTRA_KEY_ID, 0);
-        initialTimeSpent = intent.getIntExtra(EXTRA_KEY_TOTAL_TIME, 0);
+        initialTimeSpent = intent.getLongExtra(EXTRA_KEY_TOTAL_TIME, 0);
         handler.postDelayed(sendUpdatesToUI, 1000);
         return START_NOT_STICKY;
     }
@@ -54,7 +54,7 @@ public class TimerService extends Service {
         timeInMillis = SystemClock.uptimeMillis() - initialTime;
 
         Intent intent = new Intent(action);
-        int timer = initialTimeSpent + (int) timeInMillis;
+        long timer = initialTimeSpent + (long) timeInMillis;
         intent.putExtra(EXTRA_KEY_ID, projectId);
         intent.putExtra(EXTRA_KEY_TOTAL_TIME, timer);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);

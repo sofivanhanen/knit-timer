@@ -25,7 +25,9 @@ public class Dialogs {
         projectAdapterContext = context;
     }
 
-    public Dialogs(AddProjectActivity context) {addProjectActivityContext = context;}
+    public Dialogs(AddProjectActivity context) {
+        addProjectActivityContext = context;
+    }
 
     public DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
         return new DeleteProjectDialogFragment(project, index, actionMode);
@@ -33,6 +35,10 @@ public class Dialogs {
 
     public PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
         return new PauseProjectDialogFragment(project, index);
+    }
+
+    public PauseProjectDialogFragment getNewPauseProjectDialogFragment(TextView textView) {
+        return new PauseProjectDialogFragment(textView);
     }
 
     public EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
@@ -81,27 +87,47 @@ public class Dialogs {
         private Project mProject;
         private int mIndex;
 
+        private TextView mPercentTv;
+
         public PauseProjectDialogFragment(Project project, int index) {
             mProject = project;
             mIndex = index;
         }
 
+        public PauseProjectDialogFragment(TextView percentTv) {
+            mPercentTv = percentTv;
+        }
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            View view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
+            View view = null;
+            if (projectAdapterContext != null) {
+                view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
+            } else if (addProjectActivityContext != null) {
+                view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
+            }
             final NumberPicker numberPicker = (NumberPicker) view.findViewById(R.id.number_picker);
             numberPicker.setMaxValue(100);
             numberPicker.setMinValue(0);
-            numberPicker.setValue(mProject.percentageDone);
+            if (mProject != null) {
+                numberPicker.setValue(mProject.percentageDone);
+            } else if (mPercentTv != null) {
+                numberPicker.setValue(Integer.parseInt(mPercentTv.getTag() + ""));
+            }
             builder.setMessage(R.string.dialog_message_get_progress)
                     .setView(view)
                     .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mProject.percentageDone = numberPicker.getValue();
-                            if (projectAdapterContext.activityContext.updateProject(mProject) >= 1) {
-                                projectAdapterContext.notifyItemChanged(mIndex);
+                            if (mProject != null) {
+                                mProject.percentageDone = numberPicker.getValue();
+                                if (projectAdapterContext.activityContext.updateProject(mProject) >= 1) {
+                                    projectAdapterContext.notifyItemChanged(mIndex);
+                                }
+                            } else if (mPercentTv != null) {
+                                mPercentTv.setText(numberPicker.getValue() + "%");
+                                mPercentTv.setTag(numberPicker.getValue());
                             }
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {

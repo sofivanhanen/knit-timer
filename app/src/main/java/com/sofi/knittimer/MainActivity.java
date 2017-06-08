@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final int ID_PROJECTS_LOADER = 73;
 
     public static final String PROJECT_NAME_KEY = "project name";
+    public static final String PROJECT_TIME_KEY = "project time";
+    public static final String PROJECT_PERCENT_KEY = "project percent";
 
     private static final String SERVICE_RUNNING_KEY = "service running";
 
@@ -77,9 +79,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 switch (resultCode) {
                     case RESULT_OK:
                         ContentValues values = new ContentValues();
-                        values.put(ProjectContract.ProjectEntry._NAME, data.getStringExtra(PROJECT_NAME_KEY));
-                        values.put(ProjectContract.ProjectEntry._TIME_SPENT, 0);
-                        values.put(ProjectContract.ProjectEntry._PERCENT_DONE, 0);
+                        values.put(ProjectContract.ProjectEntry._NAME,
+                                data.getStringExtra(PROJECT_NAME_KEY));
+                        values.put(ProjectContract.ProjectEntry._TIME_SPENT,
+                                data.getStringExtra(PROJECT_TIME_KEY));
+                        values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
+                                data.getStringExtra(PROJECT_PERCENT_KEY));
                         getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, values);
                         return;
                     default:
