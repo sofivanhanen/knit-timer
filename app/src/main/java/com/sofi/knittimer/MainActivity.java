@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         }
                         getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, values);
                         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
+                        Toast.makeText(getApplicationContext(), "Project added!", Toast.LENGTH_SHORT).show();
                         return;
                     default:
                         return;

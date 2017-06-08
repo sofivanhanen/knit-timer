@@ -30,6 +30,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     private ActionMode mActionMode;
     private int selectedItemIndex;
+    private View selectedView;
 
     public Dialogs dialogs;
 
@@ -75,6 +76,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 selectedItemIndex = activityContext.getRecyclerView().getChildLayoutPosition(v);
                 mActionMode = activityContext.startActionMode(new mActionModeCallback());
                 v.setSelected(true);
+                selectedView = v;
                 return true;
             }
         });
@@ -104,6 +106,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                             dialogs.getNewDeleteProjectDialogFragment
                                     (projects.get(selectedItemIndex), selectedItemIndex, mode);
                     fragment.show(activityContext.getFragmentManager(), "delete");
+                    return true;
                 default:
                     return false;
             }
@@ -111,6 +114,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            if (selectedView != null) {
+                selectedView.setSelected(false);
+                selectedView = null;
+            }
             mActionMode = null;
         }
     }
@@ -123,18 +130,21 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
 
         final Project project = projects.get(position);
+
+        if (activityContext.serviceIsRunning && timerServiceIntent != null) {
+            if (timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
+                project.serviceRunning = true;
+                holder.button.setActivated(true);
+            } else {
+                holder.button.setActivated(false);
+            }
+        } else {
+            holder.button.setActivated(false);
+        }
+
         holder.projectName.setText(project.name);
         holder.details.setText(createDetailsString(project));
         holder.timeSpent.setText(createTimeString(project));
-
-        if (!activityContext.serviceIsRunning) {
-            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
-        } else if (timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) != project.id) {
-            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
-        } else {
-            holder.button.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
-            project.serviceRunning = true;
-        }
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,17 +154,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     timerServiceIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
                     timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME, project.timeSpentInMillis);
                     activityContext.startService(timerServiceIntent);
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_pause_circle));
                     project.serviceRunning = true;
                     activityContext.serviceIsRunning = true;
+                    v.setActivated(true);
                 } else if (project.serviceRunning && activityContext.serviceIsRunning) {
                     activityContext.stopService(timerServiceIntent);
                     timerServiceIntent = null;
-                    ((ImageView) v).setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_play_circle));
                     project.serviceRunning = false;
                     activityContext.serviceIsRunning = false;
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
+                    v.setActivated(false);
                 }
             }
         });
@@ -217,6 +227,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
 
     private String createDetailsString(Project project) {
+        if (project.serviceRunning) {
+            return "Working...";
+        }
+
         if (project.percentageDone == 100) {
             return "100% done. Project finished! Yay!!";
         }
