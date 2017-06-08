@@ -106,8 +106,8 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                             // With this intent, we're able to return data (the project name) to the MainActivity
                             Intent intent = new Intent(this, this.getClass());
                             intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
-                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0);
-                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0);
+                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0 + "");
+                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0 + "");
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;

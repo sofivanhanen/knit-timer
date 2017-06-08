@@ -81,11 +81,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         ContentValues values = new ContentValues();
                         values.put(ProjectContract.ProjectEntry._NAME,
                                 data.getStringExtra(PROJECT_NAME_KEY));
-                        values.put(ProjectContract.ProjectEntry._TIME_SPENT,
-                                data.getStringExtra(PROJECT_TIME_KEY));
-                        values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
-                                data.getStringExtra(PROJECT_PERCENT_KEY));
+                        if (data.getStringExtra(PROJECT_TIME_KEY) == null) {
+                            values.put(ProjectContract.ProjectEntry._TIME_SPENT,
+                                    0);
+                        } else {
+                            values.put(ProjectContract.ProjectEntry._TIME_SPENT,
+                                    data.getStringExtra(PROJECT_TIME_KEY));
+                        }
+                        if (data.getStringExtra(PROJECT_PERCENT_KEY) == null) {
+                            values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
+                                    0);
+                        } else {
+                            values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
+                                    data.getStringExtra(PROJECT_PERCENT_KEY));
+                        }
                         getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, values);
+                        getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
                         return;
                     default:
                         return;
@@ -116,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (id) {
             case ID_PROJECTS_LOADER:
                 Uri projectsUri = ProjectContract.ProjectEntry.CONTENT_URI;
-                String sortOrder = ProjectContract.ProjectEntry._PERCENT_DONE + " ASC";
+                String sortOrder = "CAST (" + ProjectContract.ProjectEntry._PERCENT_DONE + " AS int) DESC, CAST ("
+                        + ProjectContract.ProjectEntry._NAME + " AS text) COLLATE NOCASE ASC ";
                 return new CursorLoader(this, projectsUri, null, null, null, sortOrder);
         }
         return null;
