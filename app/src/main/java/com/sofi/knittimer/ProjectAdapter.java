@@ -42,7 +42,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         dialogs = new Dialogs(this);
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
-        LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(), filter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(),
+                filter);
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -152,11 +153,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 if (!project.serviceRunning && !activityContext.serviceIsRunning) {
                     timerServiceIntent = new Intent(activityContext, TimerService.class);
                     timerServiceIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
-                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME, project.timeSpentInMillis);
+                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME,
+                            project.timeSpentInMillis);
                     activityContext.startService(timerServiceIntent);
                     project.serviceRunning = true;
                     activityContext.serviceIsRunning = true;
                     v.setActivated(true);
+                    ProjectAdapter.this.notifyItemChanged(position);
                 } else if (project.serviceRunning && activityContext.serviceIsRunning) {
                     activityContext.stopService(timerServiceIntent);
                     timerServiceIntent = null;
@@ -198,7 +201,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     public class TimerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE) || intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
+            if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE) ||
+                    intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
                 int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
                 Project mProject = null;
                 int index = -1;
@@ -210,14 +214,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     }
                 }
 
-                if (mProject == null) { // Couldn't find project with given id - project was probably deleted
+                if (mProject == null) {
+                    // Couldn't find project with given id - project was probably deleted
                     context.stopService(new Intent(activityContext, TimerService.class));
                     timerServiceIntent = null;
                     activityContext.serviceIsRunning = false;
                     return;
                 }
 
-                mProject.timeSpentInMillis = intent.getLongExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
+                mProject.timeSpentInMillis =
+                        intent.getLongExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
                 notifyItemChanged(index);
                 activityContext.updateProject(mProject);
             }

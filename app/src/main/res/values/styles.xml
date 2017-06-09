@@ -8,6 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MainActivityItemTitle" parent="Base.TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif-smallcaps</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MainActivityItemDetails" parent="Base.TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/white_high_opacity</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="AddProjectActivityItem" parent="Base.TextAppearance.AppCompat">
         <item name="android:textSize">36sp</item>
         <item name="android:fontFamily">sans-serif</item>

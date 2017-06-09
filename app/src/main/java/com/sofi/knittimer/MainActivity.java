@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
@@ -96,9 +97,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
                                     data.getStringExtra(PROJECT_PERCENT_KEY));
                         }
-                        getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, values);
+                        Uri uri = insertProject(values);
+                        if (uri == null) {
+                            throw new UnsupportedOperationException("Insert failed!");
+                        }
                         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
-                        Toast.makeText(getApplicationContext(), "Project added!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Project added!",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     default:
                         return;
@@ -129,8 +134,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (id) {
             case ID_PROJECTS_LOADER:
                 Uri projectsUri = ProjectContract.ProjectEntry.CONTENT_URI;
-                String sortOrder = "CAST (" + ProjectContract.ProjectEntry._PERCENT_DONE + " AS int) DESC, CAST ("
-                        + ProjectContract.ProjectEntry._NAME + " AS text) COLLATE NOCASE ASC ";
+                String sortOrder = "CAST (" + ProjectContract.ProjectEntry._PERCENT_DONE
+                        + " AS int) DESC, CAST (" + ProjectContract.ProjectEntry._NAME
+                        + " AS text) COLLATE NOCASE ASC ";
                 return new CursorLoader(this, projectsUri, null, null, null, sortOrder);
         }
         return null;
@@ -160,7 +166,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-        menu.getItem(0).getIcon().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        menu.getItem(0).getIcon().mutate().setColorFilter
+                (ContextCompat.getColor(getApplicationContext(), R.color.white),
+                PorterDuff.Mode.SRC_ATOP);
         return true;
     }
 
@@ -193,5 +201,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         .appendPath(project.id + "").build(), values,
                 ProjectContract.ProjectEntry._ID + " = ?",
                 new String[]{project.id + ""});
+    }
+
+    public Uri insertProject(ContentValues contentValues) {
+        return getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, contentValues);
     }
 }
