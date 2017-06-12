@@ -61,10 +61,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
 
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
-                serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
-            }
+        if (savedInstanceState != null && savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
+            serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
+
         } else {
             serviceIsRunning = false;
         }
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         inflater.inflate(R.menu.main_activity_menu, menu);
         menu.getItem(0).getIcon().mutate().setColorFilter
                 (ContextCompat.getColor(getApplicationContext(), R.color.white),
-                PorterDuff.Mode.SRC_ATOP);
+                        PorterDuff.Mode.SRC_ATOP);
         return true;
     }
 

@@ -1,125 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<ScrollView android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
-    tools:context="com.sofi.knittimer.AddProjectActivity">
-
-    <EditText
-        android:id="@+id/et_set_project_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:background="@color/black_high_opacity"
-        android:hint="@string/add_project_name"
-        android:padding="8dp"
-        android:textColor="@color/colorPrimary"
-        android:textColorHint="@color/white_mid_opacity"
-        android:textCursorDrawable="@null"
-        android:textSize="30sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- android:background and android:textCursorDrawable are set so the text cursor / caret
-    and bottom line aren't shown in a weird color -->
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:spinnerMode="dropdown"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_set_project_name" />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/background_dark">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_details"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
-        android:visibility="gone">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        tools:context="com.sofi.knittimer.AddProjectActivity">
 
-        <TextView
-            android:id="@+id/tv_time_spent"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/et_set_project_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/add_project_time"
-            style="@style/AddProjectActivityItem.Definition"
+            android:layout_marginTop="24dp"
+            android:background="@color/black_high_opacity"
+            android:hint="@string/add_project_name"
+            android:padding="8dp"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/white_mid_opacity"
+            android:textCursorDrawable="@null"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/layout_time_spent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/tv_time_spent"
-            app:layout_constraintLeft_toLeftOf="parent">
+        <!-- android:background and android:textCursorDrawable are set so the text cursor / caret
+        and bottom line aren't shown in a weird color -->
 
-            <TextView
-                android:id="@+id/tv_hours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00"
-                style="@style/AddProjectActivityItem.Time"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=":"
-                style="@style/AddProjectActivityItem.Time"/>
-
-            <TextView
-                android:id="@+id/tv_minutes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00"
-                style="@style/AddProjectActivityItem.Time"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=":"
-                style="@style/AddProjectActivityItem.Time"/>
-
-            <TextView
-                android:id="@+id/tv_seconds"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00"
-                style="@style/AddProjectActivityItem.Time"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_how_much_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/add_project_percent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_time_spent"
-            style="@style/AddProjectActivityItem.Definition"/>
-
-        <TextView
-            android:id="@+id/tv_percent"
+        <Spinner
+            android:id="@+id/spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="0%"
+            android:spinnerMode="dropdown"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_how_much_done"
-            style="@style/AddProjectActivityItem"
-            android:tag="0"/> <!-- We use a tag to keep track of input so we don't have to parse the actual text -->
+            app:layout_constraintTop_toBottomOf="@+id/et_set_project_name" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner">
+
+            <TextView
+                android:id="@+id/tv_time_spent"
+                style="@style/AddProjectActivityItem.Definition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/add_project_time"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/layout_time_spent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_time_spent">
+
+                <TextView
+                    android:id="@+id/tv_hours"
+                    style="@style/AddProjectActivityItem.Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00" />
+
+                <TextView
+                    style="@style/AddProjectActivityItem.Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=":" />
+
+                <TextView
+                    android:id="@+id/tv_minutes"
+                    style="@style/AddProjectActivityItem.Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00" />
+
+                <TextView
+                    style="@style/AddProjectActivityItem.Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=":" />
+
+                <TextView
+                    android:id="@+id/tv_seconds"
+                    style="@style/AddProjectActivityItem.Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_how_much_done"
+                style="@style/AddProjectActivityItem.Definition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/add_project_percent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_time_spent" />
+
+            <TextView
+                android:id="@+id/tv_percent"
+                style="@style/AddProjectActivityItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:tag="0"
+                android:text="0%"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_how_much_done" /> <!-- We use a tag to keep track of input so we don't have to parse the actual text -->
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+</ScrollView>
