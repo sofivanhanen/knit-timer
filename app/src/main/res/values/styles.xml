@@ -36,4 +36,9 @@
         <item name="android:textColor">@color/white_high_opacity</item>
     </style>
 
+    <style name="AddProjectActivityItem.Definition.Picture">
+        <item name="android:fontFamily">sans-serif-smallcaps</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>
