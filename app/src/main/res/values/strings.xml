@@ -20,9 +20,12 @@
     <string name="dialog_message_delete">Are you sure you want to delete this project?</string>
     <string name="dialog_message_get_progress">How far along is this project?</string>
     <string name="dialog_message_edit_time">How much work has been put into this project?</string>
+    <string name="dialog_message_add_picture">Take new picture or choose one from gallery?</string>
 
     <string name="dialog_button_delete">Delete</string>
     <string name="dialog_button_cancel">Cancel</string>
     <string name="dialog_button_confirm">Confirm</string>
+    <string name="dialog_button_take_picture">Take a picture</string>
+    <string name="dialog_button_choose_from_gallery">Choose from gallery</string>
 
 </resources>

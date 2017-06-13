@@ -1,6 +1,13 @@
 package com.sofi.knittimer;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,12 +26,17 @@ import android.widget.Toast;
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText projectName;
+    private TextView pictureButton;
+    private Bitmap bitmap;
+    private int interruptedIntentRequestCode = 0;
     private Spinner spinner;
 
     private Dialogs dialogs;
 
     private LinearLayout timeSpentLayout;
     private TextView percentageDoneTv;
+
+    public static final int PERMISSION_REQUEST_CODE = 999;
 
     private final static int ARRAY_INDEX_BRAND_NEW = 0;
     private final static int ARRAY_INDEX_STARTED = 1;
@@ -50,6 +62,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     }
 
     private void setOnClickListeners() {
+        pictureButton = (TextView) findViewById(R.id.tv_picture);
+        bitmap = null;
+        pictureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogs.getNewAddPictureDialogFragment(bitmap).show(getFragmentManager(), "add picture");
+            }
+        });
+
         timeSpentLayout = (LinearLayout) findViewById(R.id.layout_time_spent);
         timeSpentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +148,50 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void startImplicitIntent(int requestCode) {
+        if (havePermissionForStorage()) {
+            interruptedIntentRequestCode = requestCode;
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CODE);
+            return;
+        } else {
+            if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
+                startActivityForResult(new Intent
+                        (MediaStore.ACTION_IMAGE_CAPTURE), Dialogs.CAPTURE_PICTURE_REQUEST);
+            } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent.createChooser(intent, "Select File"),
+                        Dialogs.CHOOSE_FROM_GALLERY_REQUEST);
+            }
+            interruptedIntentRequestCode = 0;
+        }
+    }
+
+    private boolean havePermissionForStorage() {
+        return ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (interruptedIntentRequestCode != 0) {
+                        startImplicitIntent(interruptedIntentRequestCode);
+                    }
+                }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
     }
 
     private long getTimeSpentInMillis() {

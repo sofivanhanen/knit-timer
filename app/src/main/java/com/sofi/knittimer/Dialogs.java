@@ -1,10 +1,19 @@
 package com.sofi.knittimer;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.NumberPicker;
@@ -17,6 +26,9 @@ import com.sofi.knittimer.data.Project;
  */
 
 public class Dialogs {
+
+    public static final int CAPTURE_PICTURE_REQUEST = 80;
+    public static final int CHOOSE_FROM_GALLERY_REQUEST = 81;
 
     ProjectAdapter projectAdapterContext;
     AddProjectActivity addProjectActivityContext;
@@ -31,6 +43,15 @@ public class Dialogs {
 
     public DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
         return new DeleteProjectDialogFragment(project, index, actionMode);
+    }
+
+    public AddPictureDialogFragment getNewAddPictureDialogFragment(Bitmap bitmap) {
+        if (addProjectActivityContext != null) {
+            return new AddPictureDialogFragment(addProjectActivityContext, bitmap);
+        } else {
+            Log.w("Dialogs", "called getNewAddPictureDialogFragment, context was null");
+            return null;
+        }
     }
 
     public PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
@@ -72,6 +93,40 @@ public class Dialogs {
                                 mActionMode.finish();
                                 mActionMode = null;
                             }
+                        }
+                    }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            return builder.create();
+        }
+    }
+
+    public class AddPictureDialogFragment extends DialogFragment {
+
+        private Bitmap bitmap;
+        private AddProjectActivity context;
+
+        public AddPictureDialogFragment(AddProjectActivity context, Bitmap bitmap) {
+            this.context = context;
+            this.bitmap = bitmap;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.dialog_message_add_picture)
+                    .setPositiveButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            context.startImplicitIntent(CAPTURE_PICTURE_REQUEST);
+                        }
+                    }).setNeutralButton(R.string.dialog_button_choose_from_gallery,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            context.startImplicitIntent(CHOOSE_FROM_GALLERY_REQUEST);
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
                 @Override
