@@ -36,7 +36,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     private EditText projectName;
     private ImageView pictureBackground;
     private TextView pictureButton;
-    private Bitmap bitmap;
     private int interruptedIntentRequestCode = 0;
     private Spinner spinner;
 
@@ -49,6 +48,8 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     private final static int ARRAY_INDEX_BRAND_NEW = 0;
     private final static int ARRAY_INDEX_STARTED = 1;
+
+    private boolean hasBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +69,17 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         dialogs = new Dialogs(this);
 
         setOnClickListeners();
+
+        hasBackground = false;
     }
 
     private void setOnClickListeners() {
         pictureBackground = (ImageView) findViewById(R.id.iv_picture);
         pictureButton = (TextView) findViewById(R.id.tv_picture);
-        bitmap = null;
         pictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogs.getNewAddPictureDialogFragment(bitmap).show(getFragmentManager(), "add picture");
+                dialogs.getNewAddPictureDialogFragment().show(getFragmentManager(), "add picture");
             }
         });
 
@@ -134,19 +136,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                 } else {
                     Intent intent = new Intent(this, this.getClass());
                     intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
-
-                    if (bitmap != null) {
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        int size = bitmap.getByteCount();
-                        int quality = 100;
-                        while (size > 500000) {
-                            size /= 2;
-                            quality /= 2;
-                        }
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        intent.putExtra(MainActivity.PROJECT_IMAGE_KEY, byteArray);
-                    }
+                    intent.putExtra(MainActivity.PROJECT_HAS_IMAGE_KEY, hasBackground);
 
                     switch (spinner.getSelectedItemPosition()) {
                         case ARRAY_INDEX_BRAND_NEW:
@@ -216,11 +206,12 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             return;
         }
         if (resultCode == Activity.RESULT_OK) {
+            Bitmap bitmap = null;
             if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
                 bitmap = (Bitmap) data.getExtras().get("data");
             } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
                 try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                    bitmap = ImageUtils.resizeBitmap(MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData()));
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
@@ -228,7 +219,11 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             } else {
                 return;
             }
-            pictureBackground.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+            if (bitmap != null) {
+                ImageUtils.saveToInternalStorage(bitmap, "temp", AddProjectActivity.this);
+                hasBackground = true;
+                pictureBackground.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+            }
         }
     }
 

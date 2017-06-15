@@ -43,13 +43,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String PROJECT_NAME_KEY = "project name";
     public static final String PROJECT_TIME_KEY = "project time";
     public static final String PROJECT_PERCENT_KEY = "project percent";
-    public static final String PROJECT_IMAGE_KEY = "project image";
+    public static final String PROJECT_HAS_IMAGE_KEY = "project has image in temp";
 
     private static final String SERVICE_RUNNING_KEY = "service running";
 
     public boolean serviceIsRunning;
 
-    private Bitmap waitingBitmap;
+    private boolean bitmapIsWaiting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +89,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         values.put(ProjectContract.ProjectEntry._NAME,
                                 data.getStringExtra(PROJECT_NAME_KEY));
 
-                        try {
-                            byte[] imageArray = data.getByteArrayExtra(PROJECT_IMAGE_KEY);
-                            waitingBitmap = BitmapFactory.decodeByteArray(imageArray, 0, imageArray.length);
-                        } catch (Exception e) {
-                            Log.w("onActivityResult", "Problem with bitmap");
-                            waitingBitmap = null;
-                        }
+                        bitmapIsWaiting = data.getBooleanExtra(PROJECT_HAS_IMAGE_KEY, false);
 
                         if (data.getStringExtra(PROJECT_TIME_KEY) == null) {
                             values.put(ProjectContract.ProjectEntry._TIME_SPENT,
@@ -161,15 +155,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (loader.getId()) {
             case ID_PROJECTS_LOADER:
 
-                if (waitingBitmap != null && data.moveToFirst()) {
+                if (bitmapIsWaiting && data.moveToFirst()) {
                     int mostRecentId = -1;
                     do {
                         if (mostRecentId < data.getInt(0)) {
                             mostRecentId = data.getInt(0);
                         }
                     } while (data.moveToNext());
-                    ImageUtils.saveToInternalStorage(waitingBitmap, mostRecentId, MainActivity.this);
-                    waitingBitmap = null;
+                    ImageUtils.saveToInternalStorage(ImageUtils.loadImageFromStorage("temp", this), mostRecentId + "", MainActivity.this);
+                    bitmapIsWaiting = false;
                 }
 
                 mAdapter.swapCursor(data);

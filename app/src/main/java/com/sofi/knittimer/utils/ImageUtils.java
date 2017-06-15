@@ -18,32 +18,14 @@ public final class ImageUtils {
 
     }
 
-    public static void saveToInternalStorage(Bitmap bitmap, int projectId, Context context) {
-
-        Log.i("saveToInternalStorage", "here we are");
-
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int maxWidth = 2048;
-
-        Log.i("saveToInternalStorage", width + " " + height);
-
-        while (width >= maxWidth) {
-            width /= 2;
-            height /= 2;
-        }
-
-        Log.i("saveToInternalStorage", width + " " + height);
-
-        bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+    public static void saveToInternalStorage(Bitmap bitmap, String imagePath, Context context) {
+        bitmap = resizeBitmap(bitmap);
 
         ContextWrapper contextWrapper = new ContextWrapper(context.getApplicationContext());
         File directory = contextWrapper.getDir("imageDir", Context.MODE_PRIVATE);
-        File myPath = new File(directory, projectId + ".jpg");
-        Log.i("saveToInternalStorage", myPath.getAbsolutePath());
+        File myPath = new File(directory, imagePath + ".jpg");
         FileOutputStream fileOutputStream = null;
 
-        Log.i("saveToInternalStorage", "before if");
         try {
             fileOutputStream = new FileOutputStream(myPath);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
@@ -58,16 +40,29 @@ public final class ImageUtils {
         }
     }
 
-    public static Bitmap loadImageFromStorage(int projectId, Context context) {
+    public static Bitmap loadImageFromStorage(String imagePath, Context context) {
         ContextWrapper contextWrapper = new ContextWrapper(context.getApplicationContext());
         File directory = contextWrapper.getDir("imageDir", Context.MODE_PRIVATE);
         Bitmap bitmap = null;
         try {
-            File file = new File(directory, projectId + ".jpg");
+            File file = new File(directory, imagePath + ".jpg");
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return bitmap;
+    }
+
+    public static Bitmap resizeBitmap(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int maxWidth = 1080;
+
+        while (width > maxWidth) {
+            width /= 2;
+            height /= 2;
+        }
+
+        return Bitmap.createScaledBitmap(bitmap, width, height, false);
     }
 }

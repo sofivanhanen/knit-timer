@@ -45,9 +45,9 @@ public class Dialogs {
         return new DeleteProjectDialogFragment(project, index, actionMode);
     }
 
-    public AddPictureDialogFragment getNewAddPictureDialogFragment(Bitmap bitmap) {
+    public AddPictureDialogFragment getNewAddPictureDialogFragment() {
         if (addProjectActivityContext != null) {
-            return new AddPictureDialogFragment(addProjectActivityContext, bitmap);
+            return new AddPictureDialogFragment(addProjectActivityContext);
         } else {
             Log.w("Dialogs", "called getNewAddPictureDialogFragment, context was null");
             return null;
@@ -105,12 +105,10 @@ public class Dialogs {
 
     public class AddPictureDialogFragment extends DialogFragment {
 
-        private Bitmap bitmap;
         private AddProjectActivity context;
 
-        public AddPictureDialogFragment(AddProjectActivity context, Bitmap bitmap) {
+        public AddPictureDialogFragment(AddProjectActivity context) {
             this.context = context;
-            this.bitmap = bitmap;
         }
 
         @Override

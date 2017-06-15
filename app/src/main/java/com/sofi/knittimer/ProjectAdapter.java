@@ -179,10 +179,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         });
 
         holder.background.setMaxHeight(holder.textLayout.getHeight());
-        Bitmap bitmap = ImageUtils.loadImageFromStorage(project.id, activityContext);
-        if (bitmap != null) {
+
+        if (!project.wasChecked) {
+            Bitmap bitmap = ImageUtils.loadImageFromStorage(project.id + "", activityContext);
+            if (bitmap != null) {
+                project.background = ImageUtils.resizeBitmap(bitmap);
+            }
+            project.wasChecked = true;
+        }
+
+        if (project.background != null) {
             holder.background.setImageDrawable(new BitmapDrawable
-                    (activityContext.getResources(), bitmap));
+                    (activityContext.getResources(), project.background));
         } else {
             holder.background.setImageResource(R.color.colorPrimaryDark);
         }
