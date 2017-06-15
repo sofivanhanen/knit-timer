@@ -4,6 +4,8 @@ package com.sofi.knittimer;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
+import com.sofi.knittimer.utils.ImageUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -40,10 +43,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String PROJECT_NAME_KEY = "project name";
     public static final String PROJECT_TIME_KEY = "project time";
     public static final String PROJECT_PERCENT_KEY = "project percent";
+    public static final String PROJECT_IMAGE_KEY = "project image";
 
     private static final String SERVICE_RUNNING_KEY = "service running";
 
     public boolean serviceIsRunning;
+
+    private Bitmap waitingBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +88,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         ContentValues values = new ContentValues();
                         values.put(ProjectContract.ProjectEntry._NAME,
                                 data.getStringExtra(PROJECT_NAME_KEY));
+
+                        try {
+                            byte[] imageArray = data.getByteArrayExtra(PROJECT_IMAGE_KEY);
+                            waitingBitmap = BitmapFactory.decodeByteArray(imageArray, 0, imageArray.length);
+                        } catch (Exception e) {
+                            Log.w("onActivityResult", "Problem with bitmap");
+                            waitingBitmap = null;
+                        }
+
                         if (data.getStringExtra(PROJECT_TIME_KEY) == null) {
                             values.put(ProjectContract.ProjectEntry._TIME_SPENT,
                                     0);
@@ -145,6 +160,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case ID_PROJECTS_LOADER:
+
+                if (waitingBitmap != null && data.moveToFirst()) {
+                    int mostRecentId = -1;
+                    do {
+                        if (mostRecentId < data.getInt(0)) {
+                            mostRecentId = data.getInt(0);
+                        }
+                    } while (data.moveToNext());
+                    ImageUtils.saveToInternalStorage(waitingBitmap, mostRecentId, MainActivity.this);
+                    waitingBitmap = null;
+                }
+
                 mAdapter.swapCursor(data);
                 mProgressBar.setVisibility(View.INVISIBLE);
                 return;

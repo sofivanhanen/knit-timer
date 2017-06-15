@@ -1,9 +1,11 @@
 package com.sofi.knittimer;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,14 +20,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sofi.knittimer.utils.ImageUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText projectName;
+    private ImageView pictureBackground;
     private TextView pictureButton;
     private Bitmap bitmap;
     private int interruptedIntentRequestCode = 0;
@@ -62,6 +71,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     }
 
     private void setOnClickListeners() {
+        pictureBackground = (ImageView) findViewById(R.id.iv_picture);
         pictureButton = (TextView) findViewById(R.id.tv_picture);
         bitmap = null;
         pictureButton.setOnClickListener(new View.OnClickListener() {
@@ -122,22 +132,33 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                             Toast.LENGTH_SHORT).show();
                     return true;
                 } else {
+                    Intent intent = new Intent(this, this.getClass());
+                    intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
+
+                    if (bitmap != null) {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        int size = bitmap.getByteCount();
+                        int quality = 100;
+                        while (size > 500000) {
+                            size /= 2;
+                            quality /= 2;
+                        }
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+                        byte[] byteArray = stream.toByteArray();
+                        intent.putExtra(MainActivity.PROJECT_IMAGE_KEY, byteArray);
+                    }
+
                     switch (spinner.getSelectedItemPosition()) {
                         case ARRAY_INDEX_BRAND_NEW:
-                            // With this intent, we're able to return data (the project name) to the MainActivity
-                            Intent intent = new Intent(this, this.getClass());
-                            intent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
                             intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0 + "");
                             intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0 + "");
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;
                         case ARRAY_INDEX_STARTED:
-                            Intent sIntent = new Intent(this, this.getClass());
-                            sIntent.putExtra(MainActivity.PROJECT_NAME_KEY, projectName.getText().toString());
-                            sIntent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis() + "");
-                            sIntent.putExtra(MainActivity.PROJECT_PERCENT_KEY, percentageDoneTv.getTag().toString());
-                            setResult(RESULT_OK, sIntent);
+                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis() + "");
+                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, percentageDoneTv.getTag().toString());
+                            setResult(RESULT_OK, intent);
                             finish();
                             return true;
                     }
@@ -151,10 +172,10 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     }
 
     public void startImplicitIntent(int requestCode) {
-        if (havePermissionForStorage()) {
+        if (!havePermissionForStorage()) {
             interruptedIntentRequestCode = requestCode;
             ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CODE);
+                    {Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
             return;
         } else {
             if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
@@ -191,7 +212,24 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        if (data == null) {
+            return;
+        }
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+            } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            } else {
+                return;
+            }
+            pictureBackground.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+        }
     }
 
     private long getTimeSpentInMillis() {

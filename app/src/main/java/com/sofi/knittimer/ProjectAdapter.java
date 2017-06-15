@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -16,9 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sofi.knittimer.data.Project;
+import com.sofi.knittimer.utils.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,8 +137,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         final Project project = projects.get(position);
 
-        if (activityContext.serviceIsRunning && timerServiceIntent != null) {
-            if (timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
+        if (activityContext.serviceIsRunning) {
+            if (timerServiceIntent != null &&
+                    timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
                 project.serviceRunning = true;
                 holder.button.setActivated(true);
             } else {
@@ -171,6 +177,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 }
             }
         });
+
+        holder.background.setMaxHeight(holder.textLayout.getHeight());
+        Bitmap bitmap = ImageUtils.loadImageFromStorage(project.id, activityContext);
+        if (bitmap != null) {
+            holder.background.setImageDrawable(new BitmapDrawable
+                    (activityContext.getResources(), bitmap));
+        } else {
+            holder.background.setImageResource(R.color.colorPrimaryDark);
+        }
     }
 
     @Override
@@ -183,6 +198,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
 
+        public ImageView background;
+        public RelativeLayout textLayout;
         public TextView projectName;
         public TextView details;
         public TextView timeSpent;
@@ -191,6 +208,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         public ProjectViewHolder(View itemView) {
             super(itemView);
 
+            background = (ImageView) itemView.findViewById(R.id.iv_picture);
+            textLayout = (RelativeLayout) itemView.findViewById(R.id.layout_texts);
             projectName = (TextView) itemView.findViewById(R.id.tv_project_name);
             details = (TextView) itemView.findViewById(R.id.tv_details);
             timeSpent = (TextView) itemView.findViewById(R.id.tv_time_spent);
