@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.utils.ImageUtils;
 
@@ -181,18 +182,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.background.setMaxHeight(holder.textLayout.getHeight());
 
         if (!project.wasChecked) {
-            Bitmap bitmap = ImageUtils.loadImageFromStorage("proj" + project.id, activityContext);
-            if (bitmap != null) {
-                project.background = ImageUtils.resizeBitmap(bitmap);
-            }
-            project.wasChecked = true;
-        }
-
-        if (project.background != null) {
-            holder.background.setImageDrawable(new BitmapDrawable
-                    (activityContext.getResources(), project.background));
-        } else {
             holder.background.setImageResource(R.color.colorPrimaryDark);
+            FetchImageTask task = new FetchImageTask(project, holder.background, this);
+            task.execute();
+            project.wasChecked = true;
+        } else {
+            if (project.background != null) {
+                holder.background.setImageDrawable(new BitmapDrawable(
+                        activityContext.getResources(), project.background));
+            } else {
+                holder.background.setImageResource(R.color.colorPrimaryDark);
+            }
         }
     }
 
