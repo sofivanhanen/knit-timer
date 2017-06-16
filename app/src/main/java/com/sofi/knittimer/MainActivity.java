@@ -4,21 +4,17 @@ package com.sofi.knittimer;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mProgressBar.setVisibility(View.VISIBLE);
 
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
+        bitmapIsWaiting = false;
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
             serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
@@ -162,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             mostRecentId = data.getInt(0);
                         }
                     } while (data.moveToNext());
-                    ImageUtils.saveToInternalStorage(ImageUtils.loadImageFromStorage("temp", this), mostRecentId + "", MainActivity.this);
+                    ImageUtils.saveToExternalStorage(ImageUtils.loadImageFromStorage("temp", this), "proj" + mostRecentId, MainActivity.this);
                     bitmapIsWaiting = false;
                 }
 

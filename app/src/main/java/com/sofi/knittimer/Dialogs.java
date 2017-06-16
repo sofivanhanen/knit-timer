@@ -115,12 +115,13 @@ public class Dialogs {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.dialog_message_add_picture)
-                    .setPositiveButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
+                    /*
+                    .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             context.startImplicitIntent(CAPTURE_PICTURE_REQUEST);
                         }
-                    }).setNeutralButton(R.string.dialog_button_choose_from_gallery,
+                    })*/.setPositiveButton(R.string.dialog_button_choose_from_gallery,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

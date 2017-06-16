@@ -181,7 +181,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.background.setMaxHeight(holder.textLayout.getHeight());
 
         if (!project.wasChecked) {
-            Bitmap bitmap = ImageUtils.loadImageFromStorage(project.id + "", activityContext);
+            Bitmap bitmap = ImageUtils.loadImageFromStorage("proj" + project.id, activityContext);
             if (bitmap != null) {
                 project.background = ImageUtils.resizeBitmap(bitmap);
             }

@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +29,7 @@ import android.widget.Toast;
 
 import com.sofi.knittimer.utils.ImageUtils;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -169,8 +170,36 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             return;
         } else {
             if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
-                startActivityForResult(new Intent
-                        (MediaStore.ACTION_IMAGE_CAPTURE), Dialogs.CAPTURE_PICTURE_REQUEST);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    File photoFile = null;
+                    try {
+                        photoFile = ImageUtils.createImageFile(this, "temp");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (photoFile != null) {
+                        Uri photoUri = FileProvider.getUriForFile(this, "com.sofi.knittimer.fileprovider", photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                        startActivityForResult(intent, Dialogs.CAPTURE_PICTURE_REQUEST);
+                    }
+                }
+
+
+
+/*
+                ContextWrapper contextWrapper = new ContextWrapper(this.getApplicationContext());
+                File directory = contextWrapper.getDir("imageDir", Context.MODE_PRIVATE);
+                File myPath = new File(directory, "temp" + ".jpg");
+                Uri tempUri = FileProvider.getUriForFile(AddProjectActivity.this,
+                        BuildConfig.APPLICATION_ID + ".provider", myPath);
+                Log.i("!!! path", myPath + "");
+                Log.i("!!! uri", tempUri + "");
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, myPath.toURI());
+                startActivityForResult(intent, Dialogs.CAPTURE_PICTURE_REQUEST);
+                */
             } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
@@ -208,10 +237,12 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         if (resultCode == Activity.RESULT_OK) {
             Bitmap bitmap = null;
             if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
-                bitmap = (Bitmap) data.getExtras().get("data");
+                bitmap = ImageUtils.loadImageFromStorage("temp", this);
             } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
                 try {
-                    bitmap = ImageUtils.resizeBitmap(MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData()));
+                    bitmap = ImageUtils.resizeBitmap(MediaStore.Images.Media.getBitmap
+                            (getApplicationContext().getContentResolver(), data.getData()));
+                    ImageUtils.saveToExternalStorage(bitmap, "temp", AddProjectActivity.this);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
@@ -220,7 +251,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                 return;
             }
             if (bitmap != null) {
-                ImageUtils.saveToInternalStorage(bitmap, "temp", AddProjectActivity.this);
                 hasBackground = true;
                 pictureBackground.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
             }
