@@ -3,10 +3,6 @@ package com.sofi.knittimer.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * Created by Default User on 22.5.2017.
- */
-
 public final class ProjectContract {
 
     // Defines the table and column names for the database.

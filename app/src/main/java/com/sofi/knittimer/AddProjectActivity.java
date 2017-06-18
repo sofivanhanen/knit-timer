@@ -52,6 +52,8 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     private boolean hasBackground;
 
+    // TODO: Make taking picture for background work and make the option visible (in Dialogs)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,22 +186,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                         startActivityForResult(intent, Dialogs.CAPTURE_PICTURE_REQUEST);
                     }
                 }
-
-
-
-/*
-                ContextWrapper contextWrapper = new ContextWrapper(this.getApplicationContext());
-                File directory = contextWrapper.getDir("imageDir", Context.MODE_PRIVATE);
-                File myPath = new File(directory, "temp" + ".jpg");
-                Uri tempUri = FileProvider.getUriForFile(AddProjectActivity.this,
-                        BuildConfig.APPLICATION_ID + ".provider", myPath);
-                Log.i("!!! path", myPath + "");
-                Log.i("!!! uri", tempUri + "");
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, myPath.toURI());
-                startActivityForResult(intent, Dialogs.CAPTURE_PICTURE_REQUEST);
-                */
             } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
                 Intent intent = new Intent();
                 intent.setType("image/*");

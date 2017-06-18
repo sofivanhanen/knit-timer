@@ -21,10 +21,6 @@ import android.widget.TextView;
 
 import com.sofi.knittimer.data.Project;
 
-/**
- * Created by Default User on 1.6.2017.
- */
-
 public class Dialogs {
 
     public static final int CAPTURE_PICTURE_REQUEST = 80;

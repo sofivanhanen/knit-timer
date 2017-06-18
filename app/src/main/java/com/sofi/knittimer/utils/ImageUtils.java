@@ -20,17 +20,13 @@ public final class ImageUtils {
     public static File createImageFile(Context context, String path) throws IOException {
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         storageDir.mkdirs();
-        Log.i("!!! storageDir", storageDir.getAbsolutePath());
         File image = new File(storageDir, path);
-        Log.i("!!! imageDir", image.getAbsolutePath());
         return image;
     }
 
     public static void saveToExternalStorage(Bitmap bitmap, String imagePath, Context context) {
         if (bitmap == null) {
-            Log.w("!!!saveToExternalStorag", "Bitmap was null!");
-        } else {
-            Log.i("!!! save", "Bitmap not null");
+            return;
         }
         bitmap = resizeBitmap(bitmap);
         FileOutputStream fileOutputStream = null;
@@ -55,7 +51,6 @@ public final class ImageUtils {
             File file = createImageFile(context, imagePath);
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
         } catch (Exception e) {
-            Log.w("!!!loadImageFromStorage", "Exception!! " + e.getMessage());
             e.printStackTrace();
         }
         return bitmap;

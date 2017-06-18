@@ -11,10 +11,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-/**
- * Created by Default User on 22.5.2017.
- */
-
 public class ProjectProvider extends ContentProvider {
 
     public static final int CODE_PROJECTS = 100;

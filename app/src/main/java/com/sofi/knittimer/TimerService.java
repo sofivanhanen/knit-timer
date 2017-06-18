@@ -8,10 +8,6 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-/**
- * Created by Default User on 28.5.2017.
- */
-
 public class TimerService extends Service {
 
     public static final String EXTRA_KEY_TOTAL_TIME = "Time spent";

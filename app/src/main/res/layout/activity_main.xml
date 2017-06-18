@@ -13,13 +13,4 @@
         android:scrollbars="none"
         tools:context="com.sofi.knittimer.MainActivity" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/main_recycler_view"
-        app:layout_anchorGravity="center"
-        android:visibility="invisible"/>
-
 </android.support.design.widget.CoordinatorLayout>

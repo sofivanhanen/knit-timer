@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,9 +29,10 @@ import com.sofi.knittimer.utils.ImageUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    // TODO: Make timer work in background and add notifications
+
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;
-    private ProgressBar mProgressBar;
 
     public static final int ADD_PROJECT_REQUEST = 0;
 
@@ -50,6 +52,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // TODO: Fix this (Things go wrong when orientation changes)
+        if (savedInstanceState != null && savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
+            serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
+        } else {
+            serviceIsRunning = false;
+        }
+
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
@@ -58,18 +68,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mProgressBar.setVisibility(View.VISIBLE);
-
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
         bitmapIsWaiting = false;
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
-            serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
-
-        } else {
-            serviceIsRunning = false;
-        }
     }
 
     private void startAddProjectActivity() {
@@ -159,12 +160,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             mostRecentId = data.getInt(0);
                         }
                     } while (data.moveToNext());
+                    // TODO: Make this asynchronous
                     ImageUtils.saveToExternalStorage(ImageUtils.loadImageFromStorage("temp", this), "proj" + mostRecentId, MainActivity.this);
                     bitmapIsWaiting = false;
                 }
-
                 mAdapter.swapCursor(data);
-                mProgressBar.setVisibility(View.INVISIBLE);
                 return;
         }
     }
@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (item.getItemId()) {
             case R.id.main_menu_item_add:
                 startAddProjectActivity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return mRecyclerView;
     }
 
+    // TODO: Put these data handling methods into a utilities class
     public int deleteProject(Project project) {
         return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI
                         .buildUpon().appendPath(project.id + "").build(),

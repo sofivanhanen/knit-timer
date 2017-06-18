@@ -31,6 +31,8 @@ import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
+    // TODO: Fix "working" bug
+
     public MainActivity activityContext;
     public List<Project> projects;
 
@@ -58,7 +60,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             this.notifyDataSetChanged();
             return;
         }
-        List<Project> oldProjects = projects;
         projects = new ArrayList<Project>();
         if (newCursor.moveToFirst()) {
             do {
@@ -138,21 +139,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         final Project project = projects.get(position);
 
-        if (activityContext.serviceIsRunning) {
-            if (timerServiceIntent != null &&
-                    timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
-                project.serviceRunning = true;
-                holder.button.setActivated(true);
-            } else {
-                holder.button.setActivated(false);
-            }
+        if (activityContext.serviceIsRunning && timerServiceIntent != null &&
+                timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
+            project.serviceRunning = true;
+            holder.button.setActivated(true);
         } else {
             holder.button.setActivated(false);
         }
-
-        holder.projectName.setText(project.name);
-        holder.details.setText(createDetailsString(project));
-        holder.timeSpent.setText(createTimeString(project));
 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,9 +165,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     timerServiceIntent = null;
                     project.serviceRunning = false;
                     activityContext.serviceIsRunning = false;
+                    v.setActivated(false);
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
-                    v.setActivated(false);
                 }
             }
         });
@@ -194,12 +187,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 holder.background.setImageResource(R.color.colorPrimaryDark);
             }
         }
+
+        holder.projectName.setText(project.name);
+        holder.details.setText(createDetailsString(project));
+        holder.timeSpent.setText(createTimeString(project));
     }
 
     @Override
     public int getItemCount() {
         if (projects == null) {
-            throw new NullPointerException("GetItemCount got has null list");
+            return 0;
         }
         return projects.size();
     }
@@ -251,12 +248,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
                 mProject.timeSpentInMillis =
                         intent.getLongExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
+                if (!mProject.serviceRunning) {
+                    mProject.serviceRunning = true;
+                }
                 notifyItemChanged(index);
                 activityContext.updateProject(mProject);
+                // TODO: Make this update happen in onPause and when pause is pressed
             }
         }
     }
-
 
 
     private String createDetailsString(Project project) {
