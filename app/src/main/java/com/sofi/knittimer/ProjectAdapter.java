@@ -31,20 +31,17 @@ import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
-    // TODO: Fix "working" bug
-
     public MainActivity activityContext;
     public List<Project> projects;
 
+    public int currentRunningProjectId;
     private ActionMode mActionMode;
     private int selectedItemIndex;
     private View selectedView;
 
     public Dialogs dialogs;
 
-    public Intent timerServiceIntent;
-
-    public ProjectAdapter(MainActivity context) {
+    public ProjectAdapter(MainActivity context, int currentRunningProjectId) {
         activityContext = context;
         projects = new ArrayList<Project>();
         dialogs = new Dialogs(this);
@@ -52,6 +49,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
         LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(),
                 filter);
+        this.currentRunningProjectId = currentRunningProjectId;
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -66,6 +64,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 projects.add(new Project(newCursor.getInt(0), newCursor.getString(1),
                         newCursor.getLong(2), newCursor.getInt(3)));
             } while (newCursor.moveToNext());
+        }
+        for (Project project : projects) {
+            if (project.id == currentRunningProjectId) {
+                project.serviceRunning = true;
+            }
         }
         this.notifyDataSetChanged();
     }
@@ -139,9 +142,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         final Project project = projects.get(position);
 
-        if (activityContext.serviceIsRunning && timerServiceIntent != null &&
-                timerServiceIntent.getIntExtra(TimerService.EXTRA_KEY_ID, -1) == project.id) {
-            project.serviceRunning = true;
+        if (project.serviceRunning) {
             holder.button.setActivated(true);
         } else {
             holder.button.setActivated(false);
@@ -150,25 +151,24 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!project.serviceRunning && !activityContext.serviceIsRunning) {
-                    timerServiceIntent = new Intent(activityContext, TimerService.class);
-                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
-                    timerServiceIntent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME,
-                            project.timeSpentInMillis);
-                    activityContext.startService(timerServiceIntent);
+                if (!project.serviceRunning && currentRunningProjectId == 0) {
+                    Intent intent = new Intent(activityContext, TimerService.class);
                     project.serviceRunning = true;
-                    activityContext.serviceIsRunning = true;
+                    currentRunningProjectId = project.id;
+                    intent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
+                    intent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME,
+                            project.timeSpentInMillis);
+                    activityContext.startService(intent);
                     v.setActivated(true);
-                    ProjectAdapter.this.notifyItemChanged(position);
-                } else if (project.serviceRunning && activityContext.serviceIsRunning) {
-                    activityContext.stopService(timerServiceIntent);
-                    timerServiceIntent = null;
+                } else if (project.serviceRunning && currentRunningProjectId == project.id) {
+                    activityContext.stopService(new Intent(activityContext, TimerService.class));
                     project.serviceRunning = false;
-                    activityContext.serviceIsRunning = false;
+                    currentRunningProjectId = 0;
                     v.setActivated(false);
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
                 }
+                ProjectAdapter.this.notifyItemChanged(position);
             }
         });
 
@@ -227,7 +227,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(TimerService.BROADCAST_ACTION_UPDATE) ||
                     intent.getAction().equals(TimerService.BROADCAST_ACTION_FINISH)) {
-                int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, 0);
+
+                int id = intent.getIntExtra(TimerService.EXTRA_KEY_ID, -1);
                 Project mProject = null;
                 int index = -1;
                 for (Project project : projects) {
@@ -239,18 +240,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 }
 
                 if (mProject == null) {
-                    // Couldn't find project with given id - project was probably deleted
+                    // Project not found - was probably deleted
                     context.stopService(new Intent(activityContext, TimerService.class));
-                    timerServiceIntent = null;
-                    activityContext.serviceIsRunning = false;
+                    currentRunningProjectId = 0;
                     return;
                 }
 
                 mProject.timeSpentInMillis =
                         intent.getLongExtra(TimerService.EXTRA_KEY_TOTAL_TIME, 0);
-                if (!mProject.serviceRunning) {
-                    mProject.serviceRunning = true;
-                }
                 notifyItemChanged(index);
                 activityContext.updateProject(mProject);
                 // TODO: Make this update happen in onPause and when pause is pressed

@@ -29,7 +29,7 @@ import com.sofi.knittimer.utils.ImageUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    // TODO: Make timer work in background and add notifications
+    // TODO: Add notifications
 
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;
@@ -43,9 +43,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String PROJECT_PERCENT_KEY = "project percent";
     public static final String PROJECT_HAS_IMAGE_KEY = "project has image in temp";
 
-    private static final String SERVICE_RUNNING_KEY = "service running";
-
-    public boolean serviceIsRunning;
+    private static final String RUNNING_PROJECT_ID_KEY = "current project id";
 
     private boolean bitmapIsWaiting;
 
@@ -53,17 +51,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: Fix this (Things go wrong when orientation changes)
-        if (savedInstanceState != null && savedInstanceState.containsKey(SERVICE_RUNNING_KEY)) {
-            serviceIsRunning = savedInstanceState.getBoolean(SERVICE_RUNNING_KEY);
-        } else {
-            serviceIsRunning = false;
+        int currentProjectId = 0;
+        if (savedInstanceState != null && savedInstanceState.containsKey(RUNNING_PROJECT_ID_KEY)) {
+            currentProjectId = savedInstanceState.getInt(RUNNING_PROJECT_ID_KEY);
         }
 
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
-        mAdapter = new ProjectAdapter(this);
+        mAdapter = new ProjectAdapter(this, currentProjectId);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -132,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SERVICE_RUNNING_KEY, serviceIsRunning);
+        outState.putInt(RUNNING_PROJECT_ID_KEY, mAdapter.currentRunningProjectId);
     }
 
     @Override
