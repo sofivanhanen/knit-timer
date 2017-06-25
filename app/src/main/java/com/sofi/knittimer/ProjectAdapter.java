@@ -118,6 +118,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                                     (projects.get(selectedItemIndex), selectedItemIndex, mode);
                     fragment.show(activityContext.getFragmentManager(), "delete");
                     return true;
+                case R.id.main_context_menu_item_edit:
+                    activityContext.startActivityForResult(new Intent(activityContext,
+                            EditProjectActivity.class), activityContext.EDIT_PROJECT_REQUEST);
+                    return true;
                 default:
                     return false;
             }

@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;
 
-    public static final int ADD_PROJECT_REQUEST = 0;
+    public static final int ADD_PROJECT_REQUEST = 24;
+    public static final int EDIT_PROJECT_REQUEST = 42;
 
     public static final int ID_PROJECTS_LOADER = 73;
 
@@ -110,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     default:
                         return;
                 }
+            case EDIT_PROJECT_REQUEST:
+                // TODO: Add functionality
+                return;
             default:
                 throw new UnsupportedOperationException("Unknown request code");
         }

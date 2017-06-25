@@ -3,8 +3,9 @@
     package="com.sofi.knittimer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
@@ -20,35 +21,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddProjectActivity"
+        <activity
+            android:name=".AddProjectActivity"
             android:label="@string/add_project_activity_header"
             android:parentActivityName=".MainActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
+
         <provider
+            android:name=".data.ProjectProvider"
             android:authorities="com.sofi.knittimer.data.projectprovider"
-            android:name="com.sofi.knittimer.data.ProjectProvider"
-            android:exported="false"/>
-        <service android:name=".TimerService"
             android:exported="false" />
-        <receiver android:name=".ProjectAdapter$TimerBroadcastReceiver"
-            android:exported="false"
-            android:enabled="true">
+
+        <service
+            android:name=".TimerService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".ProjectAdapter$TimerBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.sofi.knittimer.ACTION_UPDATE"/>
-                <action android:name="com.sofi.knittimer.ACTION_FINISH"/>
+                <action android:name="com.sofi.knittimer.ACTION_UPDATE" />
+                <action android:name="com.sofi.knittimer.ACTION_FINISH" />
             </intent-filter>
         </receiver>
+
         <provider
-            android:authorities="com.sofi.knittimer.fileprovider"
             android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.sofi.knittimer.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity android:name=".EditProjectActivity"></activity>
     </application>
 
 </manifest>
