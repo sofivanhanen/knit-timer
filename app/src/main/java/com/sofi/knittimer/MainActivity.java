@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final String RUNNING_PROJECT_ID_KEY = "current project id";
 
     private boolean bitmapIsWaiting;
+    private int waitingBitmapProjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     case RESULT_OK:
 
                         bitmapIsWaiting = data.getBooleanExtra(PROJECT_HAS_IMAGE_KEY, false);
+                        waitingBitmapProjectId = data.getIntExtra(PROJECT_ID_KEY, -1);
                         ContentValues contentValues = DataUtils.intentToContentValues(data);
                         int amount = updateProject(contentValues);
                         if (amount != 1) {
@@ -153,11 +155,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 if (bitmapIsWaiting && data.moveToFirst()) {
                     int mostRecentId = -1;
-                    do {
-                        if (mostRecentId < data.getInt(0)) {
-                            mostRecentId = data.getInt(0);
-                        }
-                    } while (data.moveToNext());
+                    if (waitingBitmapProjectId != -1) {
+                        mostRecentId = waitingBitmapProjectId;
+                        waitingBitmapProjectId = -1;
+                    } else {
+                        do {
+                            if (mostRecentId < data.getInt(0)) {
+                                mostRecentId = data.getInt(0);
+                            }
+                        } while (data.moveToNext());
+                    }
                     // TODO: Make this asynchronous
                     ImageUtils.saveToExternalStorage(ImageUtils.loadImageFromStorage("temp", this), "proj" + mostRecentId, MainActivity.this);
                     bitmapIsWaiting = false;
