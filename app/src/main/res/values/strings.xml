@@ -12,6 +12,7 @@
     <string name="add_project_percent">Percentage done</string>
     <string name="add_project_picture">Change background image</string>
     <string name="add_menu_item">Add</string>
+    <string name="edit_menu_item">Edit</string>
 
     <string-array name="spinner_array">
         <item>Brand New</item> <!-- If this order is changed, changes must be made in AddProjectActivity -->

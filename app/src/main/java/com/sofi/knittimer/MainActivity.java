@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
+import com.sofi.knittimer.utils.DataUtils;
 import com.sofi.knittimer.utils.ImageUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final int ID_PROJECTS_LOADER = 73;
 
     public static final String PROJECT_NAME_KEY = "project name";
+    public static final String PROJECT_ID_KEY = "project id";
     public static final String PROJECT_TIME_KEY = "project time";
     public static final String PROJECT_PERCENT_KEY = "project percent";
     public static final String PROJECT_HAS_IMAGE_KEY = "project has image in temp";
@@ -80,31 +82,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case ADD_PROJECT_REQUEST:
                 switch (resultCode) {
                     case RESULT_OK:
-                        ContentValues values = new ContentValues();
-                        values.put(ProjectContract.ProjectEntry._NAME,
-                                data.getStringExtra(PROJECT_NAME_KEY));
-
                         bitmapIsWaiting = data.getBooleanExtra(PROJECT_HAS_IMAGE_KEY, false);
-
-                        if (data.getStringExtra(PROJECT_TIME_KEY) == null) {
-                            values.put(ProjectContract.ProjectEntry._TIME_SPENT,
-                                    0);
-                        } else {
-                            values.put(ProjectContract.ProjectEntry._TIME_SPENT,
-                                    data.getStringExtra(PROJECT_TIME_KEY));
-                        }
-                        if (data.getStringExtra(PROJECT_PERCENT_KEY) == null) {
-                            values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
-                                    0);
-                        } else {
-                            values.put(ProjectContract.ProjectEntry._PERCENT_DONE,
-                                    data.getStringExtra(PROJECT_PERCENT_KEY));
-                        }
-                        Uri uri = insertProject(values);
+                        ContentValues contentValues = DataUtils.intentToContentValues(data);
+                        Uri uri = insertProject(contentValues);
                         if (uri == null) {
                             throw new UnsupportedOperationException("Insert failed!");
                         }
-                        getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
+                        getSupportLoaderManager().restartLoader(ID_PROJECTS_LOADER, null, this);
                         Toast.makeText(getApplicationContext(), "Project added!",
                                 Toast.LENGTH_SHORT).show();
                         return;
@@ -112,8 +96,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         return;
                 }
             case EDIT_PROJECT_REQUEST:
-                // TODO: Add functionality
-                return;
+                switch (resultCode) {
+                    case RESULT_OK:
+
+                        bitmapIsWaiting = data.getBooleanExtra(PROJECT_HAS_IMAGE_KEY, false);
+                        ContentValues contentValues = DataUtils.intentToContentValues(data);
+                        int amount = updateProject(contentValues);
+                        if (amount != 1) {
+                            throw new UnsupportedOperationException("update failed!");
+                        }
+                        getSupportLoaderManager().restartLoader(ID_PROJECTS_LOADER, null, this);
+                        Toast.makeText(getApplicationContext(), "Project edited!",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    default:
+                        return;
+                }
             default:
                 throw new UnsupportedOperationException("Unknown request code");
         }
@@ -163,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     // TODO: Make this asynchronous
                     ImageUtils.saveToExternalStorage(ImageUtils.loadImageFromStorage("temp", this), "proj" + mostRecentId, MainActivity.this);
                     bitmapIsWaiting = false;
+                    data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
                 return;
@@ -220,6 +219,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         .appendPath(project.id + "").build(), values,
                 ProjectContract.ProjectEntry._ID + " = ?",
                 new String[]{project.id + ""});
+    }
+
+    public int updateProject(ContentValues contentValues) {
+        int id = contentValues.getAsInteger(ProjectContract.ProjectEntry._ID);
+        return getContentResolver().update(ProjectContract.ProjectEntry.CONTENT_URI.buildUpon()
+                        .appendPath(id + "").build(), contentValues,
+                ProjectContract.ProjectEntry._ID + " = ?", new String[]{id + ""});
     }
 
     public Uri insertProject(ContentValues contentValues) {

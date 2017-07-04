@@ -227,21 +227,10 @@ public class Dialogs {
                     .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (npHours.getValue() < 10) {
-                                hours.setText("0" + npHours.getValue());
-                            } else {
-                                hours.setText(npHours.getValue() + "");
-                            }
-                            if (npMinutes.getValue() < 10) {
-                                minutes.setText("0" + npMinutes.getValue());
-                            } else {
-                                minutes.setText(npMinutes.getValue() + "");
-                            }
-                            if (npSeconds.getValue() < 10) {
-                                seconds.setText("0" + npSeconds.getValue());
-                            } else {
-                                seconds.setText(npSeconds.getValue() + "");
-                            }
+                            long timeInMillis = (long)npHours.getValue() * 1000 * 60 * 60
+                                    + (long)npMinutes.getValue() * 1000 * 60
+                                    + (long)npSeconds.getValue() * 1000;
+                            addProjectActivityContext.changeTimeSpent(timeInMillis);
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
                 @Override

@@ -1,37 +1,70 @@
 package com.sofi.knittimer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class EditProjectActivity extends AppCompatActivity {
+public class EditProjectActivity extends AddProjectActivity {
 
-    private EditText projectName;
-    private LinearLayout timeSpentLayout;
-    private TextView percentageDone;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_project);
+        intent = getIntent();
         makeLayout();
     }
 
     private void makeLayout() {
         findViewById(R.id.spinner).setVisibility(View.GONE);
 
-        projectName = (EditText) findViewById(R.id.et_set_project_name);
-
+        projectName.setText(intent.getStringExtra(MainActivity.PROJECT_NAME_KEY));
         timeSpentLayout = (LinearLayout) findViewById(R.id.layout_time_spent);
-
-        percentageDone = (TextView) findViewById(R.id.tv_percent);
-
+        changeTimeSpent(intent.getLongExtra(MainActivity.PROJECT_TIME_KEY, 0));
+        percentageDoneTv.setText(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0) + "%");
+        percentageDoneTv.setTag(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0));
         findViewById(R.id.layout_details).setVisibility(View.VISIBLE);
     }
 
-    // TODO: Add functionality
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_project_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_menu_item_edit:
+                if (projectName.getText().toString().equals("")) {
+                    Toast.makeText(getApplicationContext(), "Remember to name your project!",
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                } else {
+                    Intent newIntent = new Intent();
+                    newIntent.putExtra(MainActivity.PROJECT_NAME_KEY,
+                            projectName.getText().toString());
+                    newIntent.putExtra(MainActivity.PROJECT_ID_KEY,
+                            intent.getIntExtra(MainActivity.PROJECT_ID_KEY, 0));
+                    newIntent.putExtra(MainActivity.PROJECT_HAS_IMAGE_KEY, hasBackground);
+                    newIntent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis());
+                    newIntent.putExtra(MainActivity.PROJECT_PERCENT_KEY,
+                            Integer.parseInt(percentageDoneTv.getTag().toString()));
+                    setResult(RESULT_OK, newIntent);
+                    finish();
+                    return true;
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

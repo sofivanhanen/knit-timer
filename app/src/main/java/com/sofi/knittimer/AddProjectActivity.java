@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,23 +35,23 @@ import java.io.IOException;
 
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private EditText projectName;
-    private ImageView pictureBackground;
-    private TextView pictureButton;
-    private int interruptedIntentRequestCode = 0;
-    private Spinner spinner;
+    protected EditText projectName;
+    protected ImageView pictureBackground;
+    protected TextView pictureButton;
+    protected int interruptedIntentRequestCode = 0;
+    protected Spinner spinner;
 
-    private Dialogs dialogs;
+    protected Dialogs dialogs;
 
-    private LinearLayout timeSpentLayout;
-    private TextView percentageDoneTv;
+    protected LinearLayout timeSpentLayout;
+    protected TextView percentageDoneTv;
 
     public static final int PERMISSION_REQUEST_CODE = 999;
 
     private final static int ARRAY_INDEX_BRAND_NEW = 0;
     private final static int ARRAY_INDEX_STARTED = 1;
 
-    private boolean hasBackground;
+    protected boolean hasBackground;
 
     // TODO: Make taking picture for background work and make the option visible (in Dialogs)
 
@@ -76,7 +77,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         hasBackground = false;
     }
 
-    private void setOnClickListeners() {
+    protected void setOnClickListeners() {
         pictureBackground = (ImageView) findViewById(R.id.iv_picture);
         pictureButton = (TextView) findViewById(R.id.tv_picture);
         pictureButton.setOnClickListener(new View.OnClickListener() {
@@ -122,8 +123,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_project_menu, menu);
+        getMenuInflater().inflate(R.menu.add_project_menu, menu);
         return true;
     }
 
@@ -197,7 +197,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private boolean havePermissionForStorage() {
+    protected boolean havePermissionForStorage() {
         return ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED;
@@ -243,7 +243,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private long getTimeSpentInMillis() {
+    protected long getTimeSpentInMillis() {
         long value = Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_hours))
                 .getText().toString()) * 1000 * 60 * 60;
         value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_minutes))
@@ -251,5 +251,26 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_seconds))
                 .getText().toString()) * 1000;
         return value;
+    }
+
+    protected void changeTimeSpent(long timeInMillis) {
+        long hours = timeInMillis / (1000 * 60 * 60);
+        if (hours < 10) {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_hours)).setText("0" + hours);
+        } else {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_hours)).setText(hours + "");
+        }
+        long minutes = (timeInMillis / (1000 * 60)) % 60;
+        if (minutes < 10) {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_minutes)).setText("0" + minutes);
+        } else {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_minutes)).setText(minutes + "");
+        }
+        long seconds = (timeInMillis / 1000) % 60;
+        if (seconds < 10) {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_seconds)).setText("0" + seconds);
+        } else {
+            ((TextView) timeSpentLayout.findViewById(R.id.tv_seconds)).setText(seconds + "");
+        }
     }
 }
