@@ -1,6 +1,8 @@
 package com.sofi.knittimer;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.sofi.knittimer.utils.ImageUtils;
 
 public class EditProjectActivity extends AddProjectActivity {
 
@@ -33,6 +37,12 @@ public class EditProjectActivity extends AddProjectActivity {
         percentageDoneTv.setText(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0) + "%");
         percentageDoneTv.setTag(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0));
         findViewById(R.id.layout_details).setVisibility(View.VISIBLE);
+
+        Bitmap bitmap = ImageUtils.loadImageFromStorage("proj" +
+                intent.getIntExtra(MainActivity.PROJECT_ID_KEY, 0), this);
+        if (bitmap != null) {
+            pictureBackground.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">KnitTimer</string>
     <string name="add_project_activity_header">Add a project</string>
+    <string name="edit_project_activity_header">Edit project</string>
 
     <string name="main_add_menu_item">Add a project</string>
 

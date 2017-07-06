@@ -59,7 +59,13 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".EditProjectActivity"></activity>
+        <activity android:name=".EditProjectActivity"
+            android:label="@string/edit_project_activity_header"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

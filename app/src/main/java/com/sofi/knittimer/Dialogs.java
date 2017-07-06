@@ -76,7 +76,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
             builder.setMessage(R.string.dialog_message_delete)
                     .setPositiveButton(R.string.dialog_button_delete, new DialogInterface.OnClickListener() {
                         @Override
@@ -109,7 +109,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),  R.style.AppCompatAlertDialogStyle);
             builder.setMessage(R.string.dialog_message_add_picture)
                     /*
                     .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
@@ -150,7 +150,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
             View view = null;
             if (projectAdapterContext != null) {
                 view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
@@ -204,7 +204,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),  R.style.AppCompatAlertDialogStyle);
             View view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_edit_time, null);
 
             final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);

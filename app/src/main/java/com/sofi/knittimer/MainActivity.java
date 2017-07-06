@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         getSupportLoaderManager().initLoader(ID_PROJECTS_LOADER, null, this);
         bitmapIsWaiting = false;
+        waitingBitmapProjectId = -1;
 
     }
 
