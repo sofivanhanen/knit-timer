@@ -45,6 +45,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         activityContext = context;
         projects = new ArrayList<Project>();
         dialogs = new Dialogs(this);
+        // TODO: Check if sharedpreferences has a value, if so:
+        // select the correct project, start the runnable (edit look?)
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
         LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(),
@@ -160,6 +162,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 if (!project.serviceRunning && currentRunningProjectId == 0) {
                     Intent intent = new Intent(activityContext, TimerService.class);
                     project.serviceRunning = true;
@@ -178,6 +181,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                             .show(activityContext.getFragmentManager(), "pause");
                 }
                 ProjectAdapter.this.notifyItemChanged(position);
+                */
+                // TODO: Implement play/pause function
+                // In Play: Save the time and id in sharedpreferences, start a runnable, edit look
+                // In Pause: Stop the runnable, save into database, remove values from sharedpreferences, edit look
             }
         });
 
