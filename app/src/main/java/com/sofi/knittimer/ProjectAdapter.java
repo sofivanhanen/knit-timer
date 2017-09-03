@@ -1,17 +1,12 @@
 package com.sofi.knittimer;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +19,6 @@ import android.widget.TextView;
 
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
-import com.sofi.knittimer.utils.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,25 +27,30 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public MainActivity activityContext;
     public List<Project> projects;
+    public Handler timingHandler;
+    public TimingRunnable timingRunnable;
+    private SharedPreferences preferences;
 
-    public int currentRunningProjectId;
     private ActionMode mActionMode;
     private int selectedItemIndex;
     private View selectedView;
 
     public Dialogs dialogs;
 
-    public ProjectAdapter(MainActivity context, int currentRunningProjectId) {
+    public ProjectAdapter(MainActivity context) {
         activityContext = context;
         projects = new ArrayList<Project>();
         dialogs = new Dialogs(this);
-        // TODO: Check if sharedpreferences has a value, if so:
-        // select the correct project, start the runnable (edit look?)
+        timingHandler = new Handler();
+        timingRunnable = new TimingRunnable(timingHandler, this);
+        preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
+        /*
         IntentFilter filter = new IntentFilter(TimerService.BROADCAST_ACTION_UPDATE);
         filter.addAction(TimerService.BROADCAST_ACTION_FINISH);
         LocalBroadcastManager.getInstance(context).registerReceiver(new TimerBroadcastReceiver(),
                 filter);
         this.currentRunningProjectId = currentRunningProjectId;
+        */
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -67,10 +66,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                         newCursor.getLong(2), newCursor.getInt(3)));
             } while (newCursor.moveToNext());
         }
-        for (Project project : projects) {
-            if (project.id == currentRunningProjectId) {
-                project.serviceRunning = true;
-            }
+        Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
+                .getString(R.string.shared_preferences_current_id_key), -1));
+        if (runningProject != null) {
+            runningProject.timerRunning = true;
+            timingRunnable.begin();
+        } else {
+            // TODO: change values in SharedPreferences to default
         }
         this.notifyDataSetChanged();
     }
@@ -153,7 +155,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         final Project project = projects.get(position);
 
-        if (project.serviceRunning) {
+        if (project.timerRunning) {
             holder.button.setActivated(true);
         } else {
             holder.button.setActivated(false);
@@ -163,18 +165,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             @Override
             public void onClick(View v) {
                 /*
-                if (!project.serviceRunning && currentRunningProjectId == 0) {
+                if (!project.timerRunning && currentRunningProjectId == 0) {
                     Intent intent = new Intent(activityContext, TimerService.class);
-                    project.serviceRunning = true;
+                    project.timerRunning = true;
                     currentRunningProjectId = project.id;
                     intent.putExtra(TimerService.EXTRA_KEY_ID, project.id);
                     intent.putExtra(TimerService.EXTRA_KEY_TOTAL_TIME,
                             project.timeSpentInMillis);
                     activityContext.startService(intent);
                     v.setActivated(true);
-                } else if (project.serviceRunning && currentRunningProjectId == project.id) {
+                } else if (project.timerRunning && currentRunningProjectId == project.id) {
                     activityContext.stopService(new Intent(activityContext, TimerService.class));
-                    project.serviceRunning = false;
+                    project.timerRunning = false;
                     currentRunningProjectId = 0;
                     v.setActivated(false);
                     dialogs.getNewPauseProjectDialogFragment(project, position)
@@ -182,14 +184,39 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 }
                 ProjectAdapter.this.notifyItemChanged(position);
                 */
-                // TODO: Implement play/pause function
-                // In Play: Save the time and id in sharedpreferences, start a runnable, edit look
-                // In Pause: Stop the runnable, save into database, remove values from sharedpreferences, edit look
+                SharedPreferences preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
+                int currentlyRunningId = preferences.getInt(activityContext.getResources()
+                        .getString(R.string.shared_preferences_current_id_key), -1);
+                SharedPreferences.Editor editor = preferences.edit();
+                if (currentlyRunningId == -1) { // if no project is currently running (play)
+                    editor.putInt(activityContext.getResources().getString
+                            (R.string.shared_preferences_current_id_key), project.id);
+                    editor.putLong(activityContext.getResources().getString
+                            (R.string.shared_preferences_begin_time_key), System.currentTimeMillis());
+                    editor.apply();
+                    timingRunnable.begin();
+                    v.setActivated(true);
+                    project.timerRunning = true;
+                    ProjectAdapter.this.notifyItemChanged(position);
+                } else if (currentlyRunningId == project.id) { // if this project is currently running (pause)
+                    timingHandler.removeCallbacks(timingRunnable);
+                    editor.putInt(activityContext.getResources().getString
+                            (R.string.shared_preferences_current_id_key), -1);
+                    editor.putLong(activityContext.getResources().getString
+                            (R.string.shared_preferences_begin_time_key), -1);
+                    editor.apply();
+                    v.setActivated(false);
+                    project.timerRunning = false;
+                    dialogs.getNewPauseProjectDialogFragment(project, position)
+                            .show(activityContext.getFragmentManager(), "pause");
+                    ProjectAdapter.this.notifyItemChanged(position);
+                }
             }
         });
 
         holder.background.setMaxHeight(holder.textLayout.getHeight());
 
+        // TODO: use cache
         if (!project.wasChecked) {
             holder.background.setImageResource(R.color.colorPrimaryDark);
             FetchImageTask task = new FetchImageTask(project, holder.background, this);
@@ -238,6 +265,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
     }
 
+    /*
     public class TimerBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -270,10 +298,43 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             }
         }
     }
+    */
 
+    private Project getProjectById(int id) {
+        for (Project project : projects) {
+            if (project.id == id) {
+                return project;
+            }
+        }
+        return null; // project not found
+    }
+
+    private int getIndexOfProject(Project project) {
+        if (project == null) {
+            return -1;
+        }
+        int index = -1;
+        for (Project newProject : projects) {
+            index++;
+            if (newProject == project) {
+                return index;
+            }
+        }
+        return -1; // project not found
+    }
+
+    public void updateTime(int projectId, long timeDifference) {
+        Project project = getProjectById(projectId);
+        int index = getIndexOfProject(project);
+        if (project != null && index != -1) {
+            project.timeSpentInMillis += timeDifference;
+            ProjectAdapter.this.notifyItemChanged(index);
+        } else {
+        }
+    }
 
     private String createDetailsString(Project project) {
-        if (project.serviceRunning) {
+        if (project.timerRunning) {
             return "Working...";
         }
 
@@ -334,5 +395,47 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             returnString += littleSeconds;
         }
         return returnString;
+    }
+
+    public class TimingRunnable implements Runnable { // TODO: make this into its own file
+
+        private Handler myHandler;
+        private ProjectAdapter adapter;
+        private int currentlyRunningId;
+        private long timeAtBeginning; // TODO: use timeAtBeginning (possibly not in runnable)
+        private long timeAtLastUpdate;
+
+        public TimingRunnable(Handler myHandler, ProjectAdapter adapter) {
+            this.myHandler = myHandler;
+            this.adapter = adapter;
+        }
+
+        public void begin() {
+            SharedPreferences preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
+            currentlyRunningId = preferences.getInt(activityContext.getResources()
+                    .getString(R.string.shared_preferences_current_id_key), -1);
+            timeAtBeginning = preferences.getLong(activityContext.getResources()
+                    .getString(R.string.shared_preferences_begin_time_key), -1);
+            timeAtLastUpdate = -1;
+            myHandler.post(this);
+        }
+
+        @Override
+        public void run() {
+            if (timeAtLastUpdate == -1) { // first run - check that it really should be running
+                if (currentlyRunningId == -1 || timeAtBeginning == -1) {
+                    // if values in SharedPreferences show that timer should not be running, we stop the timer
+                    return;
+                } else {
+                    timeAtLastUpdate = System.currentTimeMillis();
+                    myHandler.postDelayed(this, 1000);
+                    return;
+                }
+            }
+            long currentTime = System.currentTimeMillis();
+            adapter.updateTime(currentlyRunningId, currentTime - timeAtLastUpdate);
+            timeAtLastUpdate = currentTime;
+            myHandler.postDelayed(this, 1000);
+        }
     }
 }

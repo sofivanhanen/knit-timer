@@ -55,15 +55,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int currentProjectId = 0;
-        if (savedInstanceState != null && savedInstanceState.containsKey(RUNNING_PROJECT_ID_KEY)) {
-            currentProjectId = savedInstanceState.getInt(RUNNING_PROJECT_ID_KEY);
-        }
-
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
-        mAdapter = new ProjectAdapter(this, currentProjectId);
+        mAdapter = new ProjectAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -133,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(RUNNING_PROJECT_ID_KEY, mAdapter.currentRunningProjectId);
     }
 
     @Override

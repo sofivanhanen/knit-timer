@@ -31,4 +31,7 @@
     <string name="dialog_button_take_picture">Take a picture</string>
     <string name="dialog_button_choose_from_gallery">Choose from gallery</string>
 
+    <string name="shared_preferences_current_id_key">com.sofi.knittimer.idkey</string>
+    <string name="shared_preferences_begin_time_key">com.sofi.knittimer.timekey</string>
+
 </resources>

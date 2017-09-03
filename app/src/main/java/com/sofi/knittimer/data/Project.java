@@ -1,7 +1,6 @@
 package com.sofi.knittimer.data;
 
 import android.graphics.Bitmap;
-import android.widget.TextView;
 
 // Knitting project class
 public class Project {
@@ -11,7 +10,7 @@ public class Project {
     public long timeSpentInMillis;
     public int percentageDone;
 
-    public boolean serviceRunning;
+    public boolean timerRunning;
 
     public Bitmap background;
     public boolean wasChecked;
@@ -21,7 +20,7 @@ public class Project {
         this.name = name;
         this.timeSpentInMillis = timeSpentInMillis;
         this.percentageDone = percentageDone;
-        serviceRunning = false;
+        timerRunning = false;
         background = null;
         wasChecked = false;
     }
