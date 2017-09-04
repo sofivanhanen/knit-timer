@@ -402,7 +402,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         private Handler myHandler;
         private ProjectAdapter adapter;
         private int currentlyRunningId;
-        private long timeAtBeginning; // TODO: use timeAtBeginning (possibly not in runnable)
+        private long timeAtBeginning;
         private long timeAtLastUpdate;
 
         public TimingRunnable(Handler myHandler, ProjectAdapter adapter) {
@@ -416,19 +416,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     .getString(R.string.shared_preferences_current_id_key), -1);
             timeAtBeginning = preferences.getLong(activityContext.getResources()
                     .getString(R.string.shared_preferences_begin_time_key), -1);
-            timeAtLastUpdate = -1;
+            timeAtLastUpdate = timeAtBeginning;
             myHandler.post(this);
         }
 
         @Override
         public void run() {
-            if (timeAtLastUpdate == -1) { // first run - check that it really should be running
+            if (timeAtLastUpdate == timeAtBeginning) { // first run - check that it really should be running
                 if (currentlyRunningId == -1 || timeAtBeginning == -1) {
                     // if values in SharedPreferences show that timer should not be running, we stop the timer
-                    return;
-                } else {
-                    timeAtLastUpdate = System.currentTimeMillis();
-                    myHandler.postDelayed(this, 1000);
                     return;
                 }
             }
