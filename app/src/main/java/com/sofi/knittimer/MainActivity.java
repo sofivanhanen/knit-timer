@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String PROJECT_PERCENT_KEY = "project percent";
     public static final String PROJECT_HAS_IMAGE_KEY = "project has image in temp";
 
-    private static final String RUNNING_PROJECT_ID_KEY = "current project id";
-
     private boolean bitmapIsWaiting;
     private int waitingBitmapProjectId;
 

@@ -35,20 +35,6 @@
             android:authorities="com.sofi.knittimer.data.projectprovider"
             android:exported="false" />
 
-        <service
-            android:name=".TimerService"
-            android:exported="false" />
-
-        <receiver
-            android:name=".ProjectAdapter$TimerBroadcastReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.sofi.knittimer.ACTION_UPDATE" />
-                <action android:name="com.sofi.knittimer.ACTION_FINISH" />
-            </intent-filter>
-        </receiver>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.sofi.knittimer.fileprovider"
