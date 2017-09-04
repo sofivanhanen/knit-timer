@@ -109,7 +109,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),  R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
             builder.setMessage(R.string.dialog_message_add_picture)
                     /*
                     .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
@@ -150,9 +150,14 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Note: This dialog looks weird because it is used in two different places:
+            // When pausing a project and when creating a new project and editing the time of it.
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
             View view = null;
             if (projectAdapterContext != null) {
+                // In case user doesn't finish the dialog but closes the app instead,
+                // we save the new values to the database right here, when building the dialog.
+                projectAdapterContext.activityContext.updateProject(mProject);
                 view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
             } else if (addProjectActivityContext != null) {
                 view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
@@ -204,7 +209,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),  R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
             View view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_edit_time, null);
 
             final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);
@@ -227,9 +232,9 @@ public class Dialogs {
                     .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            long timeInMillis = (long)npHours.getValue() * 1000 * 60 * 60
-                                    + (long)npMinutes.getValue() * 1000 * 60
-                                    + (long)npSeconds.getValue() * 1000;
+                            long timeInMillis = (long) npHours.getValue() * 1000 * 60 * 60
+                                    + (long) npMinutes.getValue() * 1000 * 60
+                                    + (long) npSeconds.getValue() * 1000;
                             addProjectActivityContext.changeTimeSpent(timeInMillis);
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
