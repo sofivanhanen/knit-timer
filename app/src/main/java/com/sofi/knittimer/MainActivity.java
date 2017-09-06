@@ -31,6 +31,7 @@ import com.sofi.knittimer.utils.ImageUtils;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // TODO: Add notifications
+    // TODO: Add broadcast receiver for ACTION_SHUTDOWN and update running project when phone turns off
 
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;

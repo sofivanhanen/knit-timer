@@ -14,6 +14,7 @@
         android:tint="@color/selector_list_item_background_tint"
         android:scaleType="centerCrop"
         android:tintMode="src_over"
+        android:maxHeight="0dp"
         android:adjustViewBounds="true"/>
 
     <LinearLayout

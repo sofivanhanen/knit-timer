@@ -182,8 +182,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             }
         });
 
-        holder.background.setMaxHeight(holder.textLayout.getHeight());
-
         // TODO: use cache
         if (!project.wasChecked) {
             holder.background.setImageResource(R.color.colorPrimaryDark);

@@ -143,14 +143,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
                     switch (spinner.getSelectedItemPosition()) {
                         case ARRAY_INDEX_BRAND_NEW:
-                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0 + "");
-                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0 + "");
+                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, 0);
+                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, 0);
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;
                         case ARRAY_INDEX_STARTED:
-                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis() + "");
-                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, percentageDoneTv.getTag().toString());
+                            intent.putExtra(MainActivity.PROJECT_TIME_KEY, getTimeSpentInMillis());
+                            intent.putExtra(MainActivity.PROJECT_PERCENT_KEY,
+                                    Integer.parseInt(percentageDoneTv.getTag().toString()));
                             setResult(RESULT_OK, intent);
                             finish();
                             return true;
