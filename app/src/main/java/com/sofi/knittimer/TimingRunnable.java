@@ -1,8 +1,11 @@
 package com.sofi.knittimer;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+
+import com.sofi.knittimer.utils.NotificationUtils;
 
 public class TimingRunnable implements Runnable {
 
@@ -37,6 +40,8 @@ public class TimingRunnable implements Runnable {
         long currentTime = System.currentTimeMillis();
         if (adapter.updateTime(currentlyRunningId, currentTime - timeAtLastUpdate) != 1) {
             adapter.resetPreferences();
+            ((NotificationManager)adapter.activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
+                    .cancel(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING);
             return; // Project not found - was probably deleted. Stop the timer.
         }
         timeAtLastUpdate = currentTime;

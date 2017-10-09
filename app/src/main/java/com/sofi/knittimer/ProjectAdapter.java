@@ -1,5 +1,6 @@
 package com.sofi.knittimer;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
+import com.sofi.knittimer.utils.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,6 +172,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     v.setActivated(true);
                     project.timerRunning = true;
                     ProjectAdapter.this.notifyItemChanged(position);
+                    ((NotificationManager)activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
+                            .notify(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING,
+                                    NotificationUtils.getTimerRunningNotification(activityContext));
                 } else if (currentlyRunningId == project.id) { // if this project is currently running (pause)
                     timingHandler.removeCallbacks(timingRunnable);
                     resetPreferences();
@@ -178,6 +183,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
                     ProjectAdapter.this.notifyItemChanged(position);
+                    ((NotificationManager)activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
+                            .cancel(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING);
                 }
             }
         });
