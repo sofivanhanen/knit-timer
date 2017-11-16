@@ -40,9 +40,13 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_set_project_name">
 
+            <!-- TODO: Fix for APIs below 21
+             What's causing problems is the selector as tint. If that is set to a static color, no crash happens
+             Note that this is a problem for the background here, and also for background / play button in project_list_item -->
+
             <ImageView
                 android:id="@+id/iv_picture"
-                android:layout_width="500dp"
+                android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:src="@color/colorPrimaryDark"
                 android:tint="@color/selector_list_item_background_tint"

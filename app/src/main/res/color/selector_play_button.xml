@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:color="@color/colorPrimary"
+    <!-- Alpha has to be set in drawable's xml file itself - therefore same colors here,
+        alpha set different for play and pause drawables-->
+
+    <item android:color="@color/white"
         android:state_activated="false"/>
 
     <item android:color="@color/white"
