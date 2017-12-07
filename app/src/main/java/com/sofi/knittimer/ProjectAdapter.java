@@ -4,7 +4,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,7 @@ import com.sofi.knittimer.utils.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
@@ -39,6 +42,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public Dialogs dialogs;
 
+    private Typeface dsGabrieleFont;
+
     public ProjectAdapter(MainActivity context) {
         activityContext = context;
         projects = new ArrayList<Project>();
@@ -46,6 +51,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         timingHandler = new Handler();
         timingRunnable = new TimingRunnable(timingHandler, this);
         preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
+        createFonts();
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -196,17 +202,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             task.execute();
             project.wasChecked = true;
         } else {
-            if (project.background != null) {
-                holder.background.setImageDrawable(new BitmapDrawable(
-                        activityContext.getResources(), project.background));
-            } else {
-                holder.background.setImageResource(R.color.colorPrimaryDark);
-            }
+            holder.background.setImageDrawable(new BitmapDrawable(
+                    activityContext.getResources(), project.background));
         }
 
         holder.projectName.setText(project.name);
+        holder.projectName.setTypeface(dsGabrieleFont);
         holder.details.setText(createDetailsString(project));
+        holder.details.setTypeface(dsGabrieleFont);
         holder.timeSpent.setText(createTimeString(project));
+        holder.timeSpent.setTypeface(dsGabrieleFont);
     }
 
     @Override
@@ -343,5 +348,14 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             returnString += littleSeconds;
         }
         return returnString;
+    }
+
+    private void createFonts() {
+        // TODO: Determine all fonts in xml (styles.xml and font folder)
+        // When we update compileSdkVersion and TargetSdkVersion,
+        // we can get a new support library with which we can define fonts in xml
+        // in android v 14 and above.
+        AssetManager am = activityContext.getAssets();
+        dsGabrieleFont = Typeface.createFromAsset(am, String.format(Locale.US, "fonts/%s", "DSGabriele.ttf"));
     }
 }

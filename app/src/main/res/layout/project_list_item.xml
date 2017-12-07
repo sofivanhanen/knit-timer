@@ -10,7 +10,7 @@
         android:id="@+id/iv_picture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@color/colorPrimaryDark"
+        android:src="@mipmap/project_background"
         android:tint="@color/selector_list_item_background_tint"
         android:scaleType="centerCrop"
         android:tintMode="src_over"
@@ -71,6 +71,8 @@
                 tools:text="1000:34:44" />
 
         </RelativeLayout>
+
+        <!-- TODO: Create pretty icons -->
 
         <ImageView
             android:id="@+id/iv_play"

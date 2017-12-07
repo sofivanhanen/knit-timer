@@ -1,6 +1,7 @@
 package com.sofi.knittimer.data;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
@@ -36,7 +37,8 @@ public class FetchImageTask extends AsyncTask<Void, Void, Void> {
             background.setImageDrawable(new BitmapDrawable(adapterContext.activityContext.getResources(), bitmap));
             project.background = bitmap;
         } else if (background != null) {
-            background.setImageResource(R.color.colorPrimaryDark);
+            background.setImageResource(R.mipmap.project_background_lower_quality);
+            project.background = BitmapFactory.decodeResource(adapterContext.activityContext.getResources(), R.mipmap.project_background_lower_quality);
         }
     }
 }
