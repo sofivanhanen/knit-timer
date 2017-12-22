@@ -46,11 +46,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public ProjectAdapter(MainActivity context) {
         activityContext = context;
+        preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
         projects = new ArrayList<Project>();
         dialogs = new Dialogs(this);
         timingHandler = new Handler();
         timingRunnable = new TimingRunnable(timingHandler, this);
-        preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
         createFonts();
     }
 
@@ -70,6 +70,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
                 .getString(R.string.shared_preferences_current_id_key), -1));
         if (runningProject != null) {
+            timingHandler.removeCallbacks(timingRunnable);
             runningProject.timerRunning = true;
             timingRunnable.begin();
         } else {
@@ -284,6 +285,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         editor.putLong(activityContext.getResources().getString
                 (R.string.shared_preferences_begin_time_key), -1);
         editor.apply();
+        dialogs.getNewDebuggingDialog().show(activityContext.getFragmentManager(), "resetf");
     }
 
     private String createDetailsString(Project project) {
