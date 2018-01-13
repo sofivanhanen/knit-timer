@@ -17,17 +17,34 @@
         android:maxHeight="0dp"
         android:adjustViewBounds="true"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="4dp">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:src="@drawable/selector_play_pause"
+            android:tint="@color/selector_play_button"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
 
         <RelativeLayout
             android:id="@+id/layout_texts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/iv_play">
 
             <TextView
                 android:id="@+id/tv_project_name"
@@ -37,21 +54,17 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
                 android:gravity="start"
                 tools:text="My Cute Socks" />
 
             <TextView
                 android:id="@+id/tv_details"
                 style="@style/MainActivityItemDetails"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/tv_project_name"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
                 android:gravity="start"
                 tools:text="20% done, 2 hours and 5 minutes left" />
 
@@ -63,8 +76,6 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/tv_details"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
                 android:gravity="start"
                 android:maxLines="1"
                 android:textColor="@color/white_high_opacity"
@@ -72,18 +83,6 @@
 
         </RelativeLayout>
 
-        <!-- TODO: Create pretty icons -->
-
-        <ImageView
-            android:id="@+id/iv_play"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:layout_weight="3"
-            android:clickable="true"
-            android:src="@drawable/selector_play_pause"
-            android:tint="@color/selector_play_button" />
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </FrameLayout>

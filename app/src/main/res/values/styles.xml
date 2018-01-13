@@ -16,10 +16,9 @@
     </style>
 
     <style name="MainActivityItemTitle" parent="Base.TextAppearance.AppCompat">
-        <item name="android:fontFamily">sans-serif-smallcaps</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">32sp</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="MainActivityItemDetails" parent="Base.TextAppearance.AppCompat">

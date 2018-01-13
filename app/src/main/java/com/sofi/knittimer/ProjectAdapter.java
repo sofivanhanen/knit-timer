@@ -42,8 +42,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public Dialogs dialogs;
 
-    private Typeface dsGabrieleFont;
-
     public ProjectAdapter(MainActivity context) {
         activityContext = context;
         preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
@@ -51,7 +49,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         dialogs = new Dialogs(this);
         timingHandler = new Handler();
         timingRunnable = new TimingRunnable(timingHandler, this);
-        createFonts();
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -208,11 +205,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
 
         holder.projectName.setText(project.name);
-        holder.projectName.setTypeface(dsGabrieleFont);
         holder.details.setText(createDetailsString(project));
-        holder.details.setTypeface(dsGabrieleFont);
         holder.timeSpent.setText(createTimeString(project));
-        holder.timeSpent.setTypeface(dsGabrieleFont);
     }
 
     @Override
@@ -350,14 +344,5 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             returnString += littleSeconds;
         }
         return returnString;
-    }
-
-    private void createFonts() {
-        // TODO: Determine all fonts in xml (styles.xml and font folder)
-        // When we update compileSdkVersion and TargetSdkVersion,
-        // we can get a new support library with which we can define fonts in xml
-        // in android v 14 and above.
-        AssetManager am = activityContext.getAssets();
-        dsGabrieleFont = Typeface.createFromAsset(am, String.format(Locale.US, "fonts/%s", "DSGabriele.ttf"));
     }
 }
