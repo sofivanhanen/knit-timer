@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         getSupportLoaderManager().restartLoader(ID_PROJECTS_LOADER, null, this);
                         Toast.makeText(getApplicationContext(), "Project edited!",
                                 Toast.LENGTH_SHORT).show();
+                        mAdapter.destroyActionMode();
                         return;
                     default:
                         return;
@@ -133,9 +134,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case ID_PROJECTS_LOADER:
+                // Sorts projects so that finished projects are last, 0% projects first.
+                // If there are projects with same #% done, sorts those by name.
                 Uri projectsUri = ProjectContract.ProjectEntry.CONTENT_URI;
                 String sortOrder = "CAST (" + ProjectContract.ProjectEntry._PERCENT_DONE
-                        + " AS int) DESC, CAST (" + ProjectContract.ProjectEntry._NAME
+                        + " AS int) ASC, CAST (" + ProjectContract.ProjectEntry._NAME
                         + " AS text) COLLATE NOCASE ASC ";
                 return new CursorLoader(this, projectsUri, null, null, null, sortOrder);
         }

@@ -99,6 +99,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return viewHolder;
     }
 
+    public void destroyActionMode() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
+
     private class mActionModeCallback implements ActionMode.Callback {
 
         @Override
