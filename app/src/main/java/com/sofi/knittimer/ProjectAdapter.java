@@ -1,5 +1,6 @@
 package com.sofi.knittimer;
 
+import android.animation.LayoutTransition;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -152,7 +153,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public void onBindViewHolder(ProjectViewHolder holder, final int position) {
+    public void onBindViewHolder(final ProjectViewHolder holder, final int position) {
 
         if (projects == null) {
             return;
@@ -162,8 +163,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         if (project.timerRunning) {
             holder.button.setActivated(true);
+            holder.textLayout.setVisibility(View.GONE);
+            holder.textLayoutActivated.setVisibility(View.VISIBLE);
         } else {
             holder.button.setActivated(false);
+            holder.textLayoutActivated.setVisibility(View.GONE);
+            holder.textLayout.setVisibility(View.VISIBLE);
         }
 
         holder.button.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +186,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     timingRunnable.begin();
                     v.setActivated(true);
                     project.timerRunning = true;
+                    holder.textLayout.setVisibility(View.GONE);
+                    holder.textLayoutActivated.setVisibility(View.VISIBLE);
                     ProjectAdapter.this.notifyItemChanged(position);
                     ((NotificationManager)activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
                             .notify(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING,
@@ -190,6 +197,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     resetPreferences();
                     v.setActivated(false);
                     project.timerRunning = false;
+                    holder.textLayoutActivated.setVisibility(View.GONE);
+                    holder.textLayout.setVisibility(View.VISIBLE);
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
                     ProjectAdapter.this.notifyItemChanged(position);
@@ -211,8 +220,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
 
         holder.projectName.setText(project.name);
+        holder.projectNameBig.setText(project.name);
         holder.details.setText(createDetailsString(project));
-        holder.timeSpent.setText(createTimeString(project));
+        String timeString = createTimeString(project);
+        holder.timeSpent.setText(timeString);
+        holder.timeSpentBig.setText(timeString);
     }
 
     @Override
@@ -232,6 +244,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         public TextView timeSpent;
         public ImageView button;
 
+        public RelativeLayout textLayoutActivated;
+        public TextView projectNameBig;
+        public TextView timeSpentBig;
+
         public ProjectViewHolder(View itemView) {
             super(itemView);
 
@@ -241,6 +257,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             details = (TextView) itemView.findViewById(R.id.tv_details);
             timeSpent = (TextView) itemView.findViewById(R.id.tv_time_spent);
             button = (ImageView) itemView.findViewById(R.id.iv_play);
+
+            textLayoutActivated = (RelativeLayout) itemView.findViewById(R.id.layout_texts_activated);
+            projectNameBig = (TextView) itemView.findViewById(R.id.tv_project_name_activated);
+            timeSpentBig = (TextView) itemView.findViewById(R.id.tv_time_spent_activated);
+
+            ((ViewGroup)itemView.findViewById(R.id.root_project_list_item_top)).getLayoutTransition()
+                    .enableTransitionType(LayoutTransition.CHANGING);
         }
     }
 
