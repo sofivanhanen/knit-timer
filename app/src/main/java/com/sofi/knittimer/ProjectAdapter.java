@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
@@ -97,6 +98,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     return false;
                 }
                 selectedItemIndex = activityContext.getRecyclerView().getChildLayoutPosition(v);
+                if (projects.get(selectedItemIndex).timerRunning) {
+                    Toast.makeText(activityContext, "Can't edit an active project!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
                 mActionMode = activityContext.startActionMode(new mActionModeCallback());
                 v.setSelected(true);
                 selectedView = v;
