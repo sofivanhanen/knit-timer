@@ -62,8 +62,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         projects = new ArrayList<Project>();
         if (newCursor.moveToFirst()) {
             do {
-                projects.add(new Project(newCursor.getInt(0), newCursor.getString(1),
-                        newCursor.getLong(2), newCursor.getInt(3)));
+                Project project = new Project(newCursor.getInt(0), newCursor.getString(1),
+                        newCursor.getLong(2), newCursor.getInt(3));
+                projects.add(project);
+                // This task will get the background image of this project.
+                // If the image exists, it will save it into project.background
+                // and call notifyItemChanged().
+                // TODO: use LruCache
+                FetchImageTask task = new FetchImageTask(project, newCursor.getPosition(), this);
+                task.execute();
             } while (newCursor.moveToNext());
         }
         Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
@@ -209,23 +216,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             }
         });
 
-        // TODO: use LruCache
-        if (!project.wasChecked) {
-            // This task will get the background image of this project.
-            // If the image exists, it will save it into project.background
-            // and call notifyItemChanged().
-            FetchImageTask task = new FetchImageTask(project, position, this);
-            task.execute();
-            holder.background.setImageResource(R.mipmap.project_background_lower_quality);
-            project.wasChecked = true;
+        if (project.background != null) {
+            holder.background.setImageDrawable(new BitmapDrawable(
+                    activityContext.getResources(), project.background));
         } else {
-            if (project.background != null) {
-                holder.background.setImageDrawable(new BitmapDrawable(
-                        activityContext.getResources(), project.background));
-            } else {
-                // Need to reset the image so recyclerView doesn't recycle an old image here.
-                holder.background.setImageResource(R.mipmap.project_background_lower_quality);
-            }
+            // Need to reset the image so recyclerView doesn't recycle an old image here.
+            holder.background.setImageResource(R.mipmap.project_background_lower_quality);
         }
 
         holder.projectName.setText(project.name);
