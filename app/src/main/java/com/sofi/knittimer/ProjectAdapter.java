@@ -318,6 +318,5 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         editor.putLong(activityContext.getResources().getString
                 (R.string.shared_preferences_begin_time_key), -1);
         editor.apply();
-        dialogs.getNewDebuggingDialog().show(activityContext.getFragmentManager(), "resetf");
     }
 }
