@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.utils.NotificationUtils;
+import com.sofi.knittimer.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -208,21 +209,29 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             }
         });
 
-        // TODO: use cache
+        // TODO: use LruCache
         if (!project.wasChecked) {
-            holder.background.setImageResource(R.color.colorPrimaryDark);
-            FetchImageTask task = new FetchImageTask(project, holder.background, this);
+            // This task will get the background image of this project.
+            // If the image exists, it will save it into project.background
+            // and call notifyItemChanged().
+            FetchImageTask task = new FetchImageTask(project, position, this);
             task.execute();
+            holder.background.setImageResource(R.mipmap.project_background_lower_quality);
             project.wasChecked = true;
         } else {
-            holder.background.setImageDrawable(new BitmapDrawable(
-                    activityContext.getResources(), project.background));
+            if (project.background != null) {
+                holder.background.setImageDrawable(new BitmapDrawable(
+                        activityContext.getResources(), project.background));
+            } else {
+                // Need to reset the image so recyclerView doesn't recycle an old image here.
+                holder.background.setImageResource(R.mipmap.project_background_lower_quality);
+            }
         }
 
         holder.projectName.setText(project.name);
         holder.projectNameBig.setText(project.name);
-        holder.details.setText(createDetailsString(project));
-        String timeString = createTimeString(project);
+        holder.details.setText(StringUtils.createDetailsString(project));
+        String timeString = StringUtils.createTimeString(project);
         holder.timeSpent.setText(timeString);
         holder.timeSpentBig.setText(timeString);
     }
@@ -309,69 +318,5 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 (R.string.shared_preferences_begin_time_key), -1);
         editor.apply();
         dialogs.getNewDebuggingDialog().show(activityContext.getFragmentManager(), "resetf");
-    }
-
-    private String createDetailsString(Project project) {
-        if (project.timerRunning) {
-            return "Working...";
-        }
-
-        if (project.percentageDone == 100) {
-            return "100% done. Project finished! Yay!!";
-        }
-
-        long timeRemaining = project.timeLeftInMillis();
-
-        if (timeRemaining == 0) { // Project hasn't been started (% is still set to 0)
-            return "0% done. Let's get to work!";
-        }
-
-        long totalSeconds = timeRemaining / 1000;
-        long totalMinutes = totalSeconds / 60;
-        long littleMinutes = totalMinutes % 60; // total minutes - whole hours
-        long totalHours = totalMinutes / 60;
-
-        String details = project.percentageDone + "% done, " + totalHours;
-        if (totalHours == 1) {
-            details += " hour and ";
-        } else {
-            details += " hours and ";
-        }
-        details += littleMinutes;
-        if (littleMinutes == 1) {
-            details += " minute left";
-        } else {
-            details += " minutes left";
-        }
-        return details;
-    }
-
-    private String createTimeString(Project project) {
-        long timeSpent = project.timeSpentInMillis;
-        long totalSeconds = timeSpent / 1000;
-        long littleSeconds = totalSeconds % 60;
-        long totalMinutes = totalSeconds / 60;
-        long littleMinutes = totalMinutes % 60;
-        long totalHours = totalMinutes / 60;
-
-        String returnString;
-        if (totalHours < 10) {
-            returnString = "0" + totalHours + ":";
-        } else {
-            returnString = "" + totalHours + ":";
-        }
-
-        if (littleMinutes < 10) {
-            returnString += "0" + littleMinutes + ":";
-        } else {
-            returnString += littleMinutes + ":";
-        }
-
-        if (littleSeconds < 10) {
-            returnString += "0" + littleSeconds;
-        } else {
-            returnString += littleSeconds;
-        }
-        return returnString;
     }
 }

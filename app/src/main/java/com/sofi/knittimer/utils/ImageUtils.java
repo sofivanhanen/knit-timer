@@ -13,9 +13,7 @@ import java.io.IOException;
 
 public final class ImageUtils {
 
-    private ImageUtils() {
-
-    }
+    private static final String TAG = ImageUtils.class.toString();
 
     public static File createImageFile(Context context, String path) throws IOException {
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -35,12 +33,12 @@ public final class ImageUtils {
             fileOutputStream = new FileOutputStream(myPath);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error saving bitmap to storage");
         } finally {
             try {
                 fileOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "IOException while saving bitmap to storage");
             }
         }
     }
@@ -51,7 +49,7 @@ public final class ImageUtils {
             File file = createImageFile(context, imagePath);
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error while loading bitmap from storage");
         }
         return bitmap;
     }
