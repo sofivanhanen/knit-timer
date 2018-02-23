@@ -176,7 +176,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         if (project.timerRunning) {
             holder.button.setActivated(true);
-            holder.textLayout.setVisibility(View.GONE);
+            holder.textLayout.setVisibility(View.INVISIBLE); // Invisible to keep same size
             holder.textLayoutActivated.setVisibility(View.VISIBLE);
         } else {
             holder.button.setActivated(false);
@@ -271,9 +271,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             textLayoutActivated = (RelativeLayout) itemView.findViewById(R.id.layout_texts_activated);
             projectNameBig = (TextView) itemView.findViewById(R.id.tv_project_name_activated);
             timeSpentBig = (TextView) itemView.findViewById(R.id.tv_time_spent_activated);
-
-            ((ViewGroup)itemView.findViewById(R.id.root_project_list_item_top)).getLayoutTransition()
-                    .enableTransitionType(LayoutTransition.CHANGING);
         }
     }
 
