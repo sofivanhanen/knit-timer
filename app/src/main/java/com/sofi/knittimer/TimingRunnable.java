@@ -38,12 +38,7 @@ public class TimingRunnable implements Runnable {
             }
         }
         long currentTime = System.currentTimeMillis();
-        if (adapter.updateTime(currentlyRunningId, currentTime - timeAtLastUpdate) != 1) {
-            adapter.resetPreferences();
-            ((NotificationManager)adapter.activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
-                    .cancel(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING);
-            return; // Project not found - was probably deleted. Stop the timer.
-        }
+        adapter.updateTime(currentlyRunningId, currentTime - timeAtLastUpdate);
         timeAtLastUpdate = currentTime;
         myHandler.postDelayed(this, 1000);
     }

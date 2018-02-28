@@ -15,7 +15,7 @@ public class NotificationUtils {
 
     public static Notification getTimerRunningNotification(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext());
-        builder.setSmallIcon(R.drawable.ic_play_circle_full_opacity);
+        builder.setSmallIcon(R.drawable.ic_play_circle_full_opacity_2pxline);
         builder.setContentTitle(context.getString(R.string.notification_title_running));
         builder.setContentText(context.getString(R.string.notification_detail_running));
         builder.setOngoing(true);

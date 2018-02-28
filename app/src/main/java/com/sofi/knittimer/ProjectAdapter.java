@@ -1,10 +1,13 @@
 package com.sofi.knittimer;
 
+import android.animation.LayoutTransition;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -17,13 +20,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.utils.NotificationUtils;
+import com.sofi.knittimer.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
@@ -41,11 +47,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public ProjectAdapter(MainActivity context) {
         activityContext = context;
+        preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
         projects = new ArrayList<Project>();
         dialogs = new Dialogs(this);
         timingHandler = new Handler();
         timingRunnable = new TimingRunnable(timingHandler, this);
-        preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -57,13 +63,21 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         projects = new ArrayList<Project>();
         if (newCursor.moveToFirst()) {
             do {
-                projects.add(new Project(newCursor.getInt(0), newCursor.getString(1),
-                        newCursor.getLong(2), newCursor.getInt(3)));
+                Project project = new Project(newCursor.getInt(0), newCursor.getString(1),
+                        newCursor.getLong(2), newCursor.getInt(3));
+                projects.add(project);
+                // This task will get the background image of this project.
+                // If the image exists, it will save it into project.background
+                // and call notifyItemChanged().
+                // TODO: use LruCache
+                FetchImageTask task = new FetchImageTask(project, newCursor.getPosition(), this);
+                task.execute();
             } while (newCursor.moveToNext());
         }
         Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
                 .getString(R.string.shared_preferences_current_id_key), -1));
         if (runningProject != null) {
+            timingHandler.removeCallbacks(timingRunnable);
             runningProject.timerRunning = true;
             timingRunnable.begin();
         } else {
@@ -84,6 +98,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     return false;
                 }
                 selectedItemIndex = activityContext.getRecyclerView().getChildLayoutPosition(v);
+                if (projects.get(selectedItemIndex).timerRunning) {
+                    Toast.makeText(activityContext, "Can't edit an active project!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
                 mActionMode = activityContext.startActionMode(new mActionModeCallback());
                 v.setSelected(true);
                 selectedView = v;
@@ -93,6 +111,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         ProjectViewHolder viewHolder = new ProjectViewHolder(projectView);
         return viewHolder;
+    }
+
+    public void destroyActionMode() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
     }
 
     private class mActionModeCallback implements ActionMode.Callback {
@@ -142,7 +166,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public void onBindViewHolder(ProjectViewHolder holder, final int position) {
+    public void onBindViewHolder(final ProjectViewHolder holder, final int position) {
 
         if (projects == null) {
             return;
@@ -152,8 +176,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         if (project.timerRunning) {
             holder.button.setActivated(true);
+            holder.textLayout.setVisibility(View.INVISIBLE); // Invisible to keep same size
+            holder.textLayoutActivated.setVisibility(View.VISIBLE);
         } else {
             holder.button.setActivated(false);
+            holder.textLayoutActivated.setVisibility(View.GONE);
+            holder.textLayout.setVisibility(View.VISIBLE);
         }
 
         holder.button.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +199,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     timingRunnable.begin();
                     v.setActivated(true);
                     project.timerRunning = true;
+                    holder.textLayout.setVisibility(View.GONE);
+                    holder.textLayoutActivated.setVisibility(View.VISIBLE);
                     ProjectAdapter.this.notifyItemChanged(position);
                     ((NotificationManager)activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
                             .notify(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING,
@@ -180,6 +210,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     resetPreferences();
                     v.setActivated(false);
                     project.timerRunning = false;
+                    holder.textLayoutActivated.setVisibility(View.GONE);
+                    holder.textLayout.setVisibility(View.VISIBLE);
                     dialogs.getNewPauseProjectDialogFragment(project, position)
                             .show(activityContext.getFragmentManager(), "pause");
                     ProjectAdapter.this.notifyItemChanged(position);
@@ -189,24 +221,20 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             }
         });
 
-        // TODO: use cache
-        if (!project.wasChecked) {
-            holder.background.setImageResource(R.color.colorPrimaryDark);
-            FetchImageTask task = new FetchImageTask(project, holder.background, this);
-            task.execute();
-            project.wasChecked = true;
+        if (project.background != null) {
+            holder.background.setImageDrawable(new BitmapDrawable(
+                    activityContext.getResources(), project.background));
         } else {
-            if (project.background != null) {
-                holder.background.setImageDrawable(new BitmapDrawable(
-                        activityContext.getResources(), project.background));
-            } else {
-                holder.background.setImageResource(R.color.colorPrimaryDark);
-            }
+            // Need to reset the image so recyclerView doesn't recycle an old image here.
+            holder.background.setImageResource(R.mipmap.project_background_lower_quality);
         }
 
         holder.projectName.setText(project.name);
-        holder.details.setText(createDetailsString(project));
-        holder.timeSpent.setText(createTimeString(project));
+        holder.projectNameBig.setText(project.name);
+        holder.details.setText(StringUtils.createDetailsString(project));
+        String timeString = StringUtils.createTimeString(project);
+        holder.timeSpent.setText(timeString);
+        holder.timeSpentBig.setText(timeString);
     }
 
     @Override
@@ -226,6 +254,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         public TextView timeSpent;
         public ImageView button;
 
+        public RelativeLayout textLayoutActivated;
+        public TextView projectNameBig;
+        public TextView timeSpentBig;
+
         public ProjectViewHolder(View itemView) {
             super(itemView);
 
@@ -235,6 +267,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             details = (TextView) itemView.findViewById(R.id.tv_details);
             timeSpent = (TextView) itemView.findViewById(R.id.tv_time_spent);
             button = (ImageView) itemView.findViewById(R.id.iv_play);
+
+            textLayoutActivated = (RelativeLayout) itemView.findViewById(R.id.layout_texts_activated);
+            projectNameBig = (TextView) itemView.findViewById(R.id.tv_project_name_activated);
+            timeSpentBig = (TextView) itemView.findViewById(R.id.tv_time_spent_activated);
         }
     }
 
@@ -279,69 +315,5 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         editor.putLong(activityContext.getResources().getString
                 (R.string.shared_preferences_begin_time_key), -1);
         editor.apply();
-    }
-
-    private String createDetailsString(Project project) {
-        if (project.timerRunning) {
-            return "Working...";
-        }
-
-        if (project.percentageDone == 100) {
-            return "100% done. Project finished! Yay!!";
-        }
-
-        long timeRemaining = project.timeLeftInMillis();
-
-        if (timeRemaining == 0) { // Project hasn't been started (% is still set to 0)
-            return "0% done. Let's get to work!";
-        }
-
-        long totalSeconds = timeRemaining / 1000;
-        long totalMinutes = totalSeconds / 60;
-        long littleMinutes = totalMinutes % 60; // total minutes - whole hours
-        long totalHours = totalMinutes / 60;
-
-        String details = project.percentageDone + "% done, " + totalHours;
-        if (totalHours == 1) {
-            details += " hour and ";
-        } else {
-            details += " hours and ";
-        }
-        details += littleMinutes;
-        if (littleMinutes == 1) {
-            details += " minute left";
-        } else {
-            details += " minutes left";
-        }
-        return details;
-    }
-
-    private String createTimeString(Project project) {
-        long timeSpent = project.timeSpentInMillis;
-        long totalSeconds = timeSpent / 1000;
-        long littleSeconds = totalSeconds % 60;
-        long totalMinutes = totalSeconds / 60;
-        long littleMinutes = totalMinutes % 60;
-        long totalHours = totalMinutes / 60;
-
-        String returnString;
-        if (totalHours < 10) {
-            returnString = "0" + totalHours + ":";
-        } else {
-            returnString = "" + totalHours + ":";
-        }
-
-        if (littleMinutes < 10) {
-            returnString += "0" + littleMinutes + ":";
-        } else {
-            returnString += littleMinutes + ":";
-        }
-
-        if (littleSeconds < 10) {
-            returnString += "0" + littleSeconds;
-        } else {
-            returnString += littleSeconds;
-        }
-        return returnString;
     }
 }

@@ -62,6 +62,12 @@ public class Dialogs {
         return new EditTimeDialogFragment(hours, minutes, seconds);
     }
 
+    public DebuggingDialog getNewDebuggingDialog() {
+        return new DebuggingDialog();
+    }
+
+    // TODO: DialogFragments should be static classes
+
     public class DeleteProjectDialogFragment extends DialogFragment {
 
         private Project mProject;
@@ -244,6 +250,25 @@ public class Dialogs {
             });
             Dialog dialog = builder.create();
             return dialog;
+        }
+    }
+
+    public static class DebuggingDialog extends DialogFragment {
+
+        public DebuggingDialog() {
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            builder.setTitle("Preferences reset")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+            return builder.create();
         }
     }
 
