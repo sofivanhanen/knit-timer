@@ -4,10 +4,10 @@
     <!-- Alpha has to be set in drawable's xml file itself - therefore same colors here,
         alpha set different for play and pause drawables-->
 
-    <item android:color="@color/white"
-        android:state_activated="false"/>
+    <item android:color="@color/black"
+        android:state_activated="false"/>F
 
-    <item android:color="@color/white"
+    <item android:color="@color/black"
         android:state_activated="true"/>
 
 </selector>

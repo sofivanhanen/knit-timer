@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:color="@color/black_high_opacity"
+    <item android:color="@color/white_high_opacity"
         android:state_selected="false"/>
-    <item android:color="@color/black_very_high_opacity"
+    <item android:color="@color/white_very_high_opacity"
         android:state_selected="true"/>
 
 </selector>

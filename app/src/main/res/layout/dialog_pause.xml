@@ -18,7 +18,6 @@
         android:layout_toRightOf="@id/number_picker"
         android:fontFamily="sans-serif"
         android:text="%"
-        android:textColor="@color/white"
         android:textSize="48sp" />
 
 </RelativeLayout>

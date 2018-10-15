@@ -79,7 +79,6 @@
                 android:layout_below="@id/tv_details"
                 android:gravity="start"
                 android:maxLines="1"
-                android:textColor="@color/white_high_opacity"
                 tools:text="1000:34:44" />
 
         </RelativeLayout>
@@ -116,7 +115,6 @@
                 android:layout_below="@id/tv_project_name_activated"
                 android:layout_centerHorizontal="true"
                 android:maxLines="1"
-                android:textColor="@color/white_high_opacity"
                 tools:text="1000:34:44"
                 android:text="39:24:10"/>
 

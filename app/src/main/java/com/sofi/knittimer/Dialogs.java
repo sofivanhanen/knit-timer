@@ -74,7 +74,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.dialog_message_delete)
                     .setPositiveButton(R.string.dialog_button_delete, new DialogInterface.OnClickListener() {
                         @Override
@@ -107,7 +107,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.dialog_message_add_picture)
                     /*
                     .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
@@ -150,7 +150,7 @@ public class Dialogs {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Note: This dialog looks weird because it is used in two different places:
             // When pausing a project and when creating a new project and editing the time of it.
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             View view = null;
             if (projectAdapterContext != null) {
                 // In case user doesn't finish the dialog but closes the app instead,
@@ -207,7 +207,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             View view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_edit_time, null);
 
             final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);
@@ -252,7 +252,7 @@ public class Dialogs {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Preferences reset")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
