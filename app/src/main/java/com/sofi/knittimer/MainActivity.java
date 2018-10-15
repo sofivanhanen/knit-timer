@@ -1,11 +1,14 @@
 package com.sofi.knittimer;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +27,7 @@ import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
 import com.sofi.knittimer.utils.DataUtils;
 import com.sofi.knittimer.utils.ImageUtils;
+import com.sofi.knittimer.utils.NotificationUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -63,10 +67,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         bitmapIsWaiting = false;
         waitingBitmapProjectId = -1;
 
+        createNotificationChannel();
     }
 
     private void startAddProjectActivity() {
         startActivityForResult(new Intent(this, AddProjectActivity.class), ADD_PROJECT_REQUEST);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notification_channel_name);
+            String description = getString(R.string.notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(NotificationUtils.NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     @Override

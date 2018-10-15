@@ -31,6 +31,9 @@
     <string name="dialog_button_take_picture">Take a picture</string>
     <string name="dialog_button_choose_from_gallery">Choose from gallery</string>
 
+    <string name="notification_channel_name">Projects</string>
+    <string name="notification_channel_description">Notifications related to projects</string>
+
     <string name="notification_title_running">Working on a project...</string>
     <string name="notification_detail_running">Tap to open in app</string>
 

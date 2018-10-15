@@ -11,10 +11,11 @@ import com.sofi.knittimer.R;
 
 public class NotificationUtils {
 
+    public static final String NOTIFICATION_CHANNEL_ID = "project_channel";
     public static final int NOTIFICATION_ID_TIMER_RUNNING = 001;
 
     public static Notification getTimerRunningNotification(Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), NOTIFICATION_CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_play_circle_full_opacity_2pxline);
         builder.setContentTitle(context.getString(R.string.notification_title_running));
         builder.setContentText(context.getString(R.string.notification_detail_running));
