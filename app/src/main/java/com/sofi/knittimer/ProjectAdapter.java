@@ -1,13 +1,10 @@
 package com.sofi.knittimer;
 
-import android.animation.LayoutTransition;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -29,23 +26,22 @@ import com.sofi.knittimer.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
     public MainActivity activityContext;
-    public List<Project> projects;
-    public Handler timingHandler;
-    public TimingRunnable timingRunnable;
-    public SharedPreferences preferences;
+    List<Project> projects;
+    private Handler timingHandler;
+    private TimingRunnable timingRunnable;
+    SharedPreferences preferences;
 
     private ActionMode mActionMode;
     private int selectedItemIndex;
     private View selectedView;
 
-    public Dialogs dialogs;
+    private Dialogs dialogs;
 
-    public ProjectAdapter(MainActivity context) {
+    ProjectAdapter(MainActivity context) {
         activityContext = context;
         preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
         projects = new ArrayList<Project>();
@@ -54,7 +50,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         timingRunnable = new TimingRunnable(timingHandler, this);
     }
 
-    public void swapCursor(Cursor newCursor) {
+    void swapCursor(Cursor newCursor) {
         if (newCursor == null) {
             projects = new ArrayList<Project>();
             this.notifyDataSetChanged();
@@ -113,7 +109,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return viewHolder;
     }
 
-    public void destroyActionMode() {
+    void destroyActionMode() {
         if (mActionMode != null) {
             mActionMode.finish();
         }
@@ -248,29 +244,29 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView background;
-        public RelativeLayout textLayout;
-        public TextView projectName;
-        public TextView details;
-        public TextView timeSpent;
-        public ImageView button;
+        RelativeLayout textLayout;
+        TextView projectName;
+        TextView details;
+        TextView timeSpent;
+        ImageView button;
 
-        public RelativeLayout textLayoutActivated;
-        public TextView projectNameBig;
-        public TextView timeSpentBig;
+        RelativeLayout textLayoutActivated;
+        TextView projectNameBig;
+        TextView timeSpentBig;
 
-        public ProjectViewHolder(View itemView) {
+        ProjectViewHolder(View itemView) {
             super(itemView);
 
-            background = (ImageView) itemView.findViewById(R.id.iv_picture);
-            textLayout = (RelativeLayout) itemView.findViewById(R.id.layout_texts);
-            projectName = (TextView) itemView.findViewById(R.id.tv_project_name);
-            details = (TextView) itemView.findViewById(R.id.tv_details);
-            timeSpent = (TextView) itemView.findViewById(R.id.tv_time_spent);
-            button = (ImageView) itemView.findViewById(R.id.iv_play);
+            background = itemView.findViewById(R.id.iv_picture);
+            textLayout = itemView.findViewById(R.id.layout_texts);
+            projectName = itemView.findViewById(R.id.tv_project_name);
+            details = itemView.findViewById(R.id.tv_details);
+            timeSpent = itemView.findViewById(R.id.tv_time_spent);
+            button = itemView.findViewById(R.id.iv_play);
 
-            textLayoutActivated = (RelativeLayout) itemView.findViewById(R.id.layout_texts_activated);
-            projectNameBig = (TextView) itemView.findViewById(R.id.tv_project_name_activated);
-            timeSpentBig = (TextView) itemView.findViewById(R.id.tv_time_spent_activated);
+            textLayoutActivated = itemView.findViewById(R.id.layout_texts_activated);
+            projectNameBig = itemView.findViewById(R.id.tv_project_name_activated);
+            timeSpentBig = itemView.findViewById(R.id.tv_time_spent_activated);
         }
     }
 
@@ -297,7 +293,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return -1; // project not found
     }
 
-    public int updateTime(int projectId, long timeDifference) {
+    int updateTime(int projectId, long timeDifference) {
         Project project = getProjectById(projectId);
         int index = getIndexOfProject(project);
         if (project != null && index != -1) {
@@ -308,7 +304,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return 0;
     }
 
-    public void resetPreferences() {
+    private void resetPreferences() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(activityContext.getResources().getString
                 (R.string.shared_preferences_current_id_key), -1);

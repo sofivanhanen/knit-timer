@@ -7,16 +7,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,9 +59,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         setContentView(R.layout.activity_add_project);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        projectName = (EditText) findViewById(R.id.et_set_project_name);
+        projectName = findViewById(R.id.et_set_project_name);
 
-        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -78,8 +76,8 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     }
 
     protected void setOnClickListeners() {
-        pictureBackground = (ImageView) findViewById(R.id.iv_picture);
-        pictureButton = (TextView) findViewById(R.id.tv_picture);
+        pictureBackground = findViewById(R.id.iv_picture);
+        pictureButton = findViewById(R.id.tv_picture);
         pictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +85,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             }
         });
 
-        timeSpentLayout = (LinearLayout) findViewById(R.id.layout_time_spent);
+        timeSpentLayout = findViewById(R.id.layout_time_spent);
         timeSpentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +95,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             }
         });
 
-        percentageDoneTv = (TextView) findViewById(R.id.tv_percent);
+        percentageDoneTv = findViewById(R.id.tv_percent);
         percentageDoneTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,7 +168,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             interruptedIntentRequestCode = requestCode;
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-            return;
         } else {
             if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -191,7 +188,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent.createChooser(intent, "Select File"),
+                startActivityForResult(Intent.createChooser(intent, "Select File"),
                         Dialogs.CHOOSE_FROM_GALLERY_REQUEST);
             }
             interruptedIntentRequestCode = 0;

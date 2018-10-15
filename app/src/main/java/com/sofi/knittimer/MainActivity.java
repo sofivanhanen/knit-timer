@@ -6,21 +6,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sofi.knittimer.data.Project;
@@ -168,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
-                return;
         }
     }
 
@@ -177,8 +173,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (loader.getId()) {
             case ID_PROJECTS_LOADER:
                 // mAdapter creates a list of items from the cursor as soon as it gets it.
-                // Therefore, we don't need to call swapCursor(Null) as mAdaptor is not using it anymore.
-                return;
+                // Therefore, we don't need to call swapCursor(null) as mAdaptor is not using it anymore.
         }
     }
 
@@ -206,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
-
     // TODO: Put these data handling methods into a utilities class
     public int deleteProject(Project project) {
         return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI

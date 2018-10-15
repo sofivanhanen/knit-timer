@@ -1,18 +1,10 @@
 package com.sofi.knittimer;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.View;
@@ -23,25 +15,25 @@ import com.sofi.knittimer.data.Project;
 
 public class Dialogs {
 
-    public static final int CAPTURE_PICTURE_REQUEST = 80;
-    public static final int CHOOSE_FROM_GALLERY_REQUEST = 81;
+    static final int CAPTURE_PICTURE_REQUEST = 80;
+    static final int CHOOSE_FROM_GALLERY_REQUEST = 81;
 
-    ProjectAdapter projectAdapterContext;
-    AddProjectActivity addProjectActivityContext;
+    private ProjectAdapter projectAdapterContext;
+    private AddProjectActivity addProjectActivityContext;
 
-    public Dialogs(ProjectAdapter context) {
+    Dialogs(ProjectAdapter context) {
         projectAdapterContext = context;
     }
 
-    public Dialogs(AddProjectActivity context) {
+    Dialogs(AddProjectActivity context) {
         addProjectActivityContext = context;
     }
 
-    public DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
+    DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
         return new DeleteProjectDialogFragment(project, index, actionMode);
     }
 
-    public AddPictureDialogFragment getNewAddPictureDialogFragment() {
+    AddPictureDialogFragment getNewAddPictureDialogFragment() {
         if (addProjectActivityContext != null) {
             return new AddPictureDialogFragment(addProjectActivityContext);
         } else {
@@ -50,15 +42,15 @@ public class Dialogs {
         }
     }
 
-    public PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
+    PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
         return new PauseProjectDialogFragment(project, index);
     }
 
-    public PauseProjectDialogFragment getNewPauseProjectDialogFragment(TextView textView) {
+    PauseProjectDialogFragment getNewPauseProjectDialogFragment(TextView textView) {
         return new PauseProjectDialogFragment(textView);
     }
 
-    public EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
+    EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
         return new EditTimeDialogFragment(hours, minutes, seconds);
     }
 

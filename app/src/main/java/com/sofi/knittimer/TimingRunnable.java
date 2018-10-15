@@ -1,11 +1,6 @@
 package com.sofi.knittimer;
 
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
-
-import com.sofi.knittimer.utils.NotificationUtils;
 
 public class TimingRunnable implements Runnable {
 
@@ -15,12 +10,12 @@ public class TimingRunnable implements Runnable {
     private long timeAtBeginning;
     private long timeAtLastUpdate;
 
-    public TimingRunnable(Handler myHandler, ProjectAdapter adapter) {
+    TimingRunnable(Handler myHandler, ProjectAdapter adapter) {
         this.myHandler = myHandler;
         this.adapter = adapter;
     }
 
-    public void begin() {
+    void begin() {
         currentlyRunningId = adapter.preferences.getInt(adapter.activityContext.getResources()
                 .getString(R.string.shared_preferences_current_id_key), -1);
         timeAtBeginning = adapter.preferences.getLong(adapter.activityContext.getResources()

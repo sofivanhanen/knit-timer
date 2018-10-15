@@ -1,13 +1,9 @@
 package com.sofi.knittimer.data;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.widget.ImageView;
 
 import com.sofi.knittimer.ProjectAdapter;
-import com.sofi.knittimer.R;
 import com.sofi.knittimer.utils.ImageUtils;
 
 public class FetchImageTask extends AsyncTask<Void, Void, Void> {

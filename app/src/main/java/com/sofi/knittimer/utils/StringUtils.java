@@ -2,10 +2,6 @@ package com.sofi.knittimer.utils;
 
 import com.sofi.knittimer.data.Project;
 
-/**
- * Created by sofvanh on 23/02/18.
- */
-
 public final class StringUtils {
 
     public static String createDetailsString(Project project) {
