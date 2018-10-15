@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(NotificationUtils.NOTIFICATION_CHANNEL_ID, name, importance);
             channel.setDescription(description);
+            channel.enableLights(true);
+            channel.setLightColor(R.color.colorPrimary);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
