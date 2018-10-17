@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: http://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="192pt"
+    height="192pt"
+    viewBox="0 0 192 192">
+<defs/>
+<g id="group0" transform="matrix(0.52465067457 0.85131760799 -0.85131760799 0.52465067457 73.970275368 18.905075705)" fill="none">
+  <rect id="shape0" transform="translate(15.36, 4.8)" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel" width="122.64" height="7.2"/>
+  <path id="shape1" transform="translate(138.00813763, 4.8927744722)" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel" d="M0 7.17006L10.352 3.64867L0.0424264 0L0 7.17006"/>
+  <ellipse id="shape2" rx="8.16" ry="8.28" cx="8.16" cy="8.28" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel"/>
+ </g><g id="group01" transform="matrix(0.76051279769 0.649322952 -0.64932294814 0.76051279318 32.241502913 62.656131836)" fill="none">
+  <rect id="shape01" transform="translate(15.36, 4.8)" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel" width="122.64" height="7.2"/>
+  <path id="shape11" transform="translate(138.00813763, 4.8927744722)" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel" d="M0 7.17006L10.352 3.64867L0.0424264 0L0 7.17006"/>
+  <ellipse id="shape21" rx="8.16" ry="8.28" cx="8.16" cy="8.28" fill="#000000" fill-rule="evenodd" stroke="#000000" stroke-width="0.5928" stroke-linecap="square" stroke-linejoin="bevel"/>
+ </g>
+</svg>
