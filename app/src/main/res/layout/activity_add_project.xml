@@ -8,29 +8,24 @@
     <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
         tools:context="com.sofi.knittimer.AddProjectActivity">
 
         <EditText
             android:id="@+id/et_set_project_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:hint="@string/add_project_name"
-            android:padding="8dp"
-            android:textCursorDrawable="@null"
-            android:textSize="30sp"
+            android:textSize="16sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- android:background and android:textCursorDrawable are set so the text cursor / caret
-        and bottom line aren't shown in a weird color -->
-
         <FrameLayout
             android:id="@+id/picture_layout"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="48dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_set_project_name">
@@ -42,19 +37,18 @@
             <ImageView
                 android:id="@+id/iv_picture"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 android:src="@color/colorPrimary"
                 android:tint="@color/selector_list_item_background_tint"
-                android:tintMode="src_over"
-                android:layout_margin="4dp"
-                android:scaleType="centerCrop"/>
+                android:tintMode="src_over" />
 
             <TextView
                 android:id="@+id/tv_picture"
                 style="@style/AddProjectActivityItem.Definition.Picture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="8dp"
                 android:clickable="true"
                 android:text="@string/add_project_picture" />
 
@@ -64,98 +58,108 @@
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:padding="8dp"
+            android:layout_marginTop="8dp"
             android:spinnerMode="dropdown"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/picture_layout" />
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:id="@+id/layout_details"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:orientation="vertical"
+            android:visibility="visible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner">
+            app:layout_constraintTop_toBottomOf="@id/spinner">
 
-            <TextView
-                android:id="@+id/tv_time_spent"
-                style="@style/AddProjectActivityItem.Definition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/add_project_time"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <View style="@style/PaddedDivider8dp" />
 
             <LinearLayout
-                android:id="@+id/layout_time_spent"
-                android:layout_width="wrap_content"
+                android:id="@+id/time_spent_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_time_spent">
+                android:orientation="vertical"
+                android:clickable="true">
 
                 <TextView
-                    android:id="@+id/tv_hours"
-                    style="@style/AddProjectActivityItem.Time"
+                    android:id="@+id/tv_time_spent"
+                    style="@style/AddProjectActivityItem.Definition"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00" />
+                    android:text="@string/add_project_time" />
 
-                <TextView
-                    style="@style/AddProjectActivityItem.Time"
+                <LinearLayout
+                    android:id="@+id/layout_time_spent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=":" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tv_minutes"
-                    style="@style/AddProjectActivityItem.Time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="00" />
+                    <TextView
+                        android:id="@+id/tv_hours"
+                        style="@style/AddProjectActivityItem.Value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00" />
 
-                <TextView
-                    style="@style/AddProjectActivityItem.Time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=":" />
+                    <TextView
+                        style="@style/AddProjectActivityItem.Value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=":" />
 
-                <TextView
-                    android:id="@+id/tv_seconds"
-                    style="@style/AddProjectActivityItem.Time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="00" />
+                    <TextView
+                        android:id="@+id/tv_minutes"
+                        style="@style/AddProjectActivityItem.Value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00" />
+
+                    <TextView
+                        style="@style/AddProjectActivityItem.Value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=":" />
+
+                    <TextView
+                        android:id="@+id/tv_seconds"
+                        style="@style/AddProjectActivityItem.Value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00" />
+                </LinearLayout>
+
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_how_much_done"
-                style="@style/AddProjectActivityItem.Definition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/add_project_percent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_time_spent" />
+            <View style="@style/PaddedDivider8dp" />
 
-            <TextView
-                android:id="@+id/tv_percent"
-                style="@style/AddProjectActivityItem"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/percent_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:tag="0"
-                android:text="0%"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_how_much_done" /> <!-- We use a tag to keep track of input so we don't have to parse the actual text -->
+                android:orientation="vertical"
+                android:clickable="true">
 
-        </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tv_how_much_done"
+                    style="@style/AddProjectActivityItem.Definition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_project_percent" />
+
+                <TextView
+                    android:id="@+id/tv_percent"
+                    style="@style/AddProjectActivityItem.Value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tag="0"
+                    android:text="0%" /> <!-- We use a tag to keep track of input so we don't have to parse the actual text -->
+
+            </LinearLayout>
+
+            <View style="@style/PaddedDivider8dp" />
+
+        </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
 

@@ -12,6 +12,7 @@
     <color name="dark_grey">#333333</color>
     <color name="black_very_high_opacity">#DD000000</color>
     <color name="black_high_opacity">#AA000000</color>
+    <color name="black_med_opacity">#77000000</color>
 
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>

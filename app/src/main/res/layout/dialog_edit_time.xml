@@ -12,7 +12,7 @@
         android:id="@+id/first_colon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AddProjectActivityItem.Time"
+        style="@style/AddProjectActivityItem.Value"
         android:text=":"
         android:layout_toLeftOf="@id/np_minutes"
         android:layout_centerVertical="true"/>
@@ -28,7 +28,7 @@
         android:id="@+id/second_colon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AddProjectActivityItem.Time"
+        style="@style/AddProjectActivityItem.Value"
         android:text=":"
         android:layout_toRightOf="@id/np_minutes"
         android:layout_centerVertical="true"/>

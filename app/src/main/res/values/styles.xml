@@ -6,12 +6,23 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/black_high_opacity</item>
+        <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="homeAsUpIndicator">@drawable/ic_back_button</item>
     </style>
 
+    <style name="AppTheme.ActionBarStyle" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/AppTheme.ActionBarStyle.Title</item>
+    </style>
+
+    <style name="AppTheme.ActionBarStyle.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:fontFamily">@font/raustila_regular</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
     <style name="MainActivityItemTitle" parent="Base.TextAppearance.AppCompat">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="MainActivityItemDetails" parent="Base.TextAppearance.AppCompat">
@@ -20,22 +31,38 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="AddProjectActivityItem" parent="Base.TextAppearance.AppCompat">
-        <item name="android:textSize">36sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AddProjectActivityItem.Time">
+    <style name="MainActivityItemDetails.Time">
         <item name="android:fontFamily">monospace</item>
     </style>
 
+    <style name="AddProjectActivityItem" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AddProjectActivityItem.Value" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black_med_opacity</item>
+    </style>
+
     <style name="AddProjectActivityItem.Definition">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="AddProjectActivityItem.Definition.Picture">
         <item name="android:fontFamily">sans-serif-smallcaps</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <style name="PaddedDivider8dp" parent="Divider">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
     </style>
 
 </resources>

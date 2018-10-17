@@ -203,9 +203,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-        menu.getItem(0).getIcon().mutate().setColorFilter
-                (ContextCompat.getColor(getApplicationContext(), R.color.white),
-                        PorterDuff.Mode.SRC_ATOP);
         return true;
     }
 
