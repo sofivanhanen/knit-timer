@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
+import com.sofi.knittimer.utils.DialogUtils;
 import com.sofi.knittimer.utils.NotificationUtils;
 import com.sofi.knittimer.utils.StringUtils;
 
@@ -206,13 +207,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     resetPreferences();
                     v.setActivated(false);
                     project.timerRunning = false;
-                    holder.textLayoutActivated.setVisibility(View.GONE);
-                    holder.textLayout.setVisibility(View.VISIBLE);
-                    dialogs.getNewPauseProjectDialogFragment(project, position)
-                            .show(activityContext.getFragmentManager(), "pause");
-                    ProjectAdapter.this.notifyItemChanged(position);
+                    activityContext.updateProject(project);
+
+                    // Cancel notification
                     ((NotificationManager)activityContext.getSystemService(Context.NOTIFICATION_SERVICE))
                             .cancel(NotificationUtils.NOTIFICATION_ID_TIMER_RUNNING);
+
+                    // UI
+                    holder.textLayoutActivated.setVisibility(View.GONE);
+                    holder.textLayout.setVisibility(View.VISIBLE);
+                    ProjectAdapter.this.notifyItemChanged(position);
+                    // TODO start dialog from activity
+                    DialogUtils.PercentageSetterDialogFragment.newInstance(project.id, project.percentageDone).show(activityContext.getFragmentManager(), "pause");
                 }
             }
         });
@@ -270,7 +276,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
     }
 
-    private Project getProjectById(int id) {
+    Project getProjectById(int id) {
         for (Project project : projects) {
             if (project.id == id) {
                 return project;
@@ -279,7 +285,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return null; // project not found
     }
 
-    private int getIndexOfProject(Project project) {
+    int getIndexOfProject(Project project) {
         if (project == null) {
             return -1;
         }

@@ -99,8 +99,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         percentageDoneTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogs.getNewPauseProjectDialogFragment(percentageDoneTv)
-                        .show(getFragmentManager(), "edit percentage");
+                // TODO show percentage picker dialog
+                /*dialogs.getNewPauseProjectDialogFragment(percentageDoneTv)
+                        .show(getFragmentManager(), "edit percentage");*/
             }
         });
     }

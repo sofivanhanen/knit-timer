@@ -42,14 +42,6 @@ public class Dialogs {
         }
     }
 
-    PauseProjectDialogFragment getNewPauseProjectDialogFragment(Project project, int index) {
-        return new PauseProjectDialogFragment(project, index);
-    }
-
-    PauseProjectDialogFragment getNewPauseProjectDialogFragment(TextView textView) {
-        return new PauseProjectDialogFragment(textView);
-    }
-
     EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
         return new EditTimeDialogFragment(hours, minutes, seconds);
     }
@@ -57,8 +49,6 @@ public class Dialogs {
     public DebuggingDialog getNewDebuggingDialog() {
         return new DebuggingDialog();
     }
-
-    // TODO: DialogFragments should be static classes
 
     public class DeleteProjectDialogFragment extends DialogFragment {
 
@@ -127,69 +117,6 @@ public class Dialogs {
                 }
             });
             return builder.create();
-        }
-    }
-
-    public class PauseProjectDialogFragment extends DialogFragment {
-
-        private Project mProject;
-        private int mIndex;
-
-        private TextView mPercentTv;
-
-        public PauseProjectDialogFragment(Project project, int index) {
-            mProject = project;
-            mIndex = index;
-        }
-
-        public PauseProjectDialogFragment(TextView percentTv) {
-            mPercentTv = percentTv;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Note: This dialog looks weird because it is used in two different places:
-            // When pausing a project and when creating a new project and editing the time of it.
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            View view = null;
-            if (projectAdapterContext != null) {
-                // In case user doesn't finish the dialog but closes the app instead,
-                // we save the new values to the database right here, when building the dialog.
-                projectAdapterContext.activityContext.updateProject(mProject);
-                view = projectAdapterContext.activityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
-            } else if (addProjectActivityContext != null) {
-                view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_pause, null);
-            }
-            final NumberPicker numberPicker = (NumberPicker) view.findViewById(R.id.number_picker);
-            numberPicker.setMaxValue(100);
-            numberPicker.setMinValue(0);
-            if (mProject != null) {
-                numberPicker.setValue(mProject.percentageDone);
-            } else if (mPercentTv != null) {
-                numberPicker.setValue(Integer.parseInt(mPercentTv.getTag() + ""));
-            }
-            builder.setMessage(R.string.dialog_message_get_progress)
-                    .setView(view)
-                    .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (mProject != null) {
-                                mProject.percentageDone = numberPicker.getValue();
-                                if (projectAdapterContext.activityContext.updateProject(mProject) >= 1) {
-                                    projectAdapterContext.notifyItemChanged(mIndex);
-                                }
-                            } else if (mPercentTv != null) {
-                                mPercentTv.setText(numberPicker.getValue() + "%");
-                                mPercentTv.setTag(numberPicker.getValue());
-                            }
-                        }
-                    }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            Dialog dialog = builder.create();
-            return dialog;
         }
     }
 

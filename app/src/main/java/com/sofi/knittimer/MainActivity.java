@@ -26,10 +26,11 @@ import android.widget.Toast;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
 import com.sofi.knittimer.utils.DataUtils;
+import com.sofi.knittimer.utils.DialogUtils;
 import com.sofi.knittimer.utils.ImageUtils;
 import com.sofi.knittimer.utils.NotificationUtils;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
 
     // TODO: Save data so that data persists through deleting and reinstalling
     // TODO: Add broadcast receiver for ACTION_SHUTDOWN and update running project when phone turns off
@@ -249,5 +250,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public Uri insertProject(ContentValues contentValues) {
         return getContentResolver().insert(ProjectContract.ProjectEntry.CONTENT_URI, contentValues);
+    }
+
+    @Override
+    public void onPauseDialogPositiveClick(int projectId, int newPercentage) {
+        Project project = mAdapter.getProjectById(projectId);
+        project.percentageDone = newPercentage;
+        updateProject(project);
+        mAdapter.notifyItemChanged(mAdapter.getIndexOfProject(project));
     }
 }
