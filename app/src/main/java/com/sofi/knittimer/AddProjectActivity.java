@@ -26,12 +26,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sofi.knittimer.utils.DialogUtils;
 import com.sofi.knittimer.utils.ImageUtils;
 
 import java.io.File;
 import java.io.IOException;
 
-public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
 
     protected EditText projectName;
     protected ImageView pictureBackground;
@@ -99,9 +100,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         percentageDoneTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO show percentage picker dialog
-                /*dialogs.getNewPauseProjectDialogFragment(percentageDoneTv)
-                        .show(getFragmentManager(), "edit percentage");*/
+                DialogUtils.PercentageSetterDialogFragment
+                        .newInstance(-1, Integer.parseInt((String)(percentageDoneTv.getTag() + "")))
+                        .show(getFragmentManager(), "set percentage");
             }
         });
     }
@@ -271,5 +272,11 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         } else {
             ((TextView) timeSpentLayout.findViewById(R.id.tv_seconds)).setText(seconds + "");
         }
+    }
+
+    @Override
+    public void onPauseDialogPositiveClick(int projectId, int newPercentage) {
+        percentageDoneTv.setText(newPercentage + "%");
+        percentageDoneTv.setTag(newPercentage);
     }
 }
