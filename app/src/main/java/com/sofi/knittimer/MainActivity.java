@@ -31,7 +31,8 @@ import com.sofi.knittimer.utils.ImageUtils;
 import com.sofi.knittimer.utils.NotificationUtils;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
+        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener,
+        DialogUtils.DeleteProjectDialogFragment.DeleteProjectDialogListener {
 
     // TODO: Save data so that data persists through deleting and reinstalling
     // TODO: Add broadcast receiver for ACTION_SHUTDOWN and update running project when phone turns off
@@ -228,10 +229,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return mRecyclerView;
     }
     // TODO: Put these data handling methods into a utilities class
-    public int deleteProject(Project project) {
+    public int deleteProject(int projectId) {
         return getContentResolver().delete(ProjectContract.ProjectEntry.CONTENT_URI
-                        .buildUpon().appendPath(project.id + "").build(),
-                ProjectContract.ProjectEntry._ID + " = ?", new String[]{project.id + ""});
+                        .buildUpon().appendPath(projectId + "").build(),
+                ProjectContract.ProjectEntry._ID + " = ?", new String[]{projectId + ""});
     }
 
     public int updateProject(Project project) {
@@ -262,5 +263,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         project.percentageDone = newPercentage;
         updateProject(project);
         mAdapter.notifyItemChanged(mAdapter.getIndexOfProject(project));
+    }
+
+    @Override
+    public void onDeleteProjectDialogPositiveClick(int projectId) {
+        if (deleteProject(projectId) >= 1) {
+            mAdapter.projectDeleted(projectId);
+            mAdapter.destroyActionMode(); // TODO ActionMode should be handled by Activity, not adapter.
+        }
     }
 }

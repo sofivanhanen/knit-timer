@@ -42,8 +42,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     protected int interruptedIntentRequestCode = 0;
     protected Spinner spinner;
 
-    protected Dialogs dialogs;
-
     protected LinearLayout timeSpentButton;
     protected LinearLayout percentageDoneButton;
     protected TextView percentageDoneTv;
@@ -54,8 +52,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     private final static int ARRAY_INDEX_STARTED = 1;
 
     protected boolean hasBackground;
-
-    // TODO: Make taking picture for background work and make the option visible (in Dialogs)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +67,6 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
-
-        dialogs = new Dialogs(this);
 
         setOnClickListeners();
 

@@ -40,13 +40,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private int selectedItemIndex;
     private View selectedView;
 
-    private Dialogs dialogs;
-
     ProjectAdapter(MainActivity context) {
         activityContext = context;
         preferences = activityContext.getPreferences(Context.MODE_PRIVATE);
         projects = new ArrayList<Project>();
-        dialogs = new Dialogs(this);
         timingHandler = new Handler();
         timingRunnable = new TimingRunnable(timingHandler, this);
     }
@@ -96,7 +93,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 }
                 selectedItemIndex = activityContext.getRecyclerView().getChildLayoutPosition(v);
                 if (projects.get(selectedItemIndex).timerRunning) {
-                    Toast.makeText(activityContext, "Can't edit an active project!", Toast.LENGTH_SHORT).show();
+                    showCannotEditToast();
                     return false;
                 }
                 mActionMode = activityContext.startActionMode(new mActionModeCallback());
@@ -108,6 +105,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         ProjectViewHolder viewHolder = new ProjectViewHolder(projectView);
         return viewHolder;
+    }
+
+    void showCannotEditToast() {
+        Toast.makeText(activityContext, "Can't edit an active project!", Toast.LENGTH_SHORT).show();
     }
 
     void destroyActionMode() {
@@ -133,11 +134,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.main_context_menu_item_delete:
-                    Dialogs.DeleteProjectDialogFragment fragment =
-                            dialogs.getNewDeleteProjectDialogFragment
-                                    (projects.get(selectedItemIndex), selectedItemIndex, mode);
-                    fragment.show(activityContext.getFragmentManager(), "delete");
-                    return true;
+                    DialogUtils.DeleteProjectDialogFragment
+                            .newInstance(projects.get(selectedItemIndex).id)
+                            .show(activityContext.getFragmentManager(), "delete");
+                    return false;
                 case R.id.main_context_menu_item_edit:
                     Project selectedProject = projects.get(selectedItemIndex);
                     Intent intent = new Intent(activityContext, EditProjectActivity.class);
@@ -146,7 +146,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     intent.putExtra(MainActivity.PROJECT_TIME_KEY, selectedProject.timeSpentInMillis);
                     intent.putExtra(MainActivity.PROJECT_PERCENT_KEY, selectedProject.percentageDone);
                     activityContext.startActivityForResult(intent, MainActivity.EDIT_PROJECT_REQUEST);
-                    return true;
+                    return false;
                 default:
                     return false;
             }
@@ -187,6 +187,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 int currentlyRunningId = preferences.getInt(activityContext.getResources()
                         .getString(R.string.shared_preferences_current_id_key), -1);
                 if (currentlyRunningId == -1) { // if no project is currently running (play)
+                    if (selectedItemIndex == getIndexOfProject(project)) {
+                        showCannotEditToast();
+                        return;
+                    }
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putInt(activityContext.getResources().getString
                             (R.string.shared_preferences_current_id_key), project.id);
@@ -276,6 +280,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
     }
 
+    void projectDeleted(int projectId) {
+        Project project = getProjectById(projectId);
+        int index = getIndexOfProject(project);
+        projects.remove(project);
+        notifyItemRemoved(index);
+    }
+
     Project getProjectById(int id) {
         for (Project project : projects) {
             if (project.id == id) {
@@ -296,7 +307,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 return index;
             }
         }
-        return -1; // project not found
+        throw new IllegalArgumentException("Couldn't find project named " + project.name);
     }
 
     int updateTime(int projectId, long timeDifference) {
