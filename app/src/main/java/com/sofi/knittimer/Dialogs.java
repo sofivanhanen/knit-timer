@@ -15,9 +15,6 @@ import com.sofi.knittimer.data.Project;
 
 public class Dialogs {
 
-    static final int CAPTURE_PICTURE_REQUEST = 80;
-    static final int CHOOSE_FROM_GALLERY_REQUEST = 81;
-
     private ProjectAdapter projectAdapterContext;
     private AddProjectActivity addProjectActivityContext;
 
@@ -31,15 +28,6 @@ public class Dialogs {
 
     DeleteProjectDialogFragment getNewDeleteProjectDialogFragment(Project project, int index, ActionMode actionMode) {
         return new DeleteProjectDialogFragment(project, index, actionMode);
-    }
-
-    AddPictureDialogFragment getNewAddPictureDialogFragment() {
-        if (addProjectActivityContext != null) {
-            return new AddPictureDialogFragment(addProjectActivityContext);
-        } else {
-            Log.w("Dialogs", "called getNewAddPictureDialogFragment, context was null");
-            return null;
-        }
     }
 
     public DebuggingDialog getNewDebuggingDialog() {
@@ -73,39 +61,6 @@ public class Dialogs {
                                 mActionMode.finish();
                                 mActionMode = null;
                             }
-                        }
-                    }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            return builder.create();
-        }
-    }
-
-    public class AddPictureDialogFragment extends DialogFragment {
-
-        private AddProjectActivity context;
-
-        public AddPictureDialogFragment(AddProjectActivity context) {
-            this.context = context;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.dialog_message_add_picture)
-                    /*
-                    .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            context.startImplicitIntent(CAPTURE_PICTURE_REQUEST);
-                        }
-                    })*/.setPositiveButton(R.string.dialog_button_choose_from_gallery,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            context.startImplicitIntent(CHOOSE_FROM_GALLERY_REQUEST);
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
                 @Override

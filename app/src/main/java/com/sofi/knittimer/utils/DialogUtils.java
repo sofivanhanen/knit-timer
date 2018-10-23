@@ -133,4 +133,50 @@ public final class DialogUtils {
         }
     }
 
+    public static class AddPictureDialogFragment extends DialogFragment {
+
+        public interface AddPictureDialogListener {
+            void onAddPictureDialogPositiveClick();
+        }
+
+        AddPictureDialogListener mListener;
+
+        // Helper for bundling information
+        public static AddPictureDialogFragment newInstance() {
+            AddPictureDialogFragment fragment = new AddPictureDialogFragment();
+            return fragment;
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
+            try {
+                mListener = (AddPictureDialogListener) context;
+            } catch (ClassCastException exception) {
+                throw new ClassCastException(context.toString() + " must implement PercentageSetterDialogListener");
+            }
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.dialog_message_add_picture)
+                    /* // TODO Enable taking a picture
+                    .setNeutralButton(R.string.dialog_button_take_picture, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            context.startImplicitIntent(CAPTURE_PICTURE_REQUEST);
+                        }
+                    })*/
+                    .setPositiveButton(R.string.dialog_button_choose_from_gallery,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mListener.onAddPictureDialogPositiveClick();
+                        }
+                    }).setNegativeButton(R.string.dialog_button_cancel, null);
+            return builder.create();
+        }
+    }
+
 }

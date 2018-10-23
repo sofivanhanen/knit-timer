@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public static final int ADD_PROJECT_REQUEST = 24;
     public static final int EDIT_PROJECT_REQUEST = 42;
+    public static final int CAPTURE_PICTURE_REQUEST = 80;
+    public static final int CHOOSE_FROM_GALLERY_REQUEST = 81;
 
     public static final int ID_PROJECTS_LOADER = 73;
 

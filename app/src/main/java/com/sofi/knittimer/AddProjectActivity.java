@@ -33,7 +33,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
-        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener, DialogUtils.TimeSetterDialogFragment.TimeSetterDialogListener {
+        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener, DialogUtils.TimeSetterDialogFragment.TimeSetterDialogListener,
+        DialogUtils.AddPictureDialogFragment.AddPictureDialogListener {
 
     protected EditText projectName;
     protected ImageView pictureBackground;
@@ -84,7 +85,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         pictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogs.getNewAddPictureDialogFragment().show(getFragmentManager(), "add picture");
+                DialogUtils.AddPictureDialogFragment
+                        .newInstance()
+                        .show(getFragmentManager(), "add picture");
             }
         });
 
@@ -288,5 +291,10 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onTimeSetterDialogPositiveClick(long time) {
         changeTimeSpent(time);
+    }
+
+    @Override
+    public void onAddPictureDialogPositiveClick() {
+        startImplicitIntent(MainActivity.CHOOSE_FROM_GALLERY_REQUEST);
     }
 }
