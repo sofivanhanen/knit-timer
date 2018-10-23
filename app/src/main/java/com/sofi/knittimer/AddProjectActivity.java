@@ -179,7 +179,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         } else {
-            if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
+            if (requestCode == MainActivity.CAPTURE_PICTURE_REQUEST) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     File photoFile = null;
@@ -191,15 +191,15 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                     if (photoFile != null) {
                         Uri photoUri = FileProvider.getUriForFile(this, "com.sofi.knittimer.fileprovider", photoFile);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                        startActivityForResult(intent, Dialogs.CAPTURE_PICTURE_REQUEST);
+                        startActivityForResult(intent, MainActivity.CAPTURE_PICTURE_REQUEST);
                     }
                 }
-            } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
+            } else if (requestCode == MainActivity.CHOOSE_FROM_GALLERY_REQUEST) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select File"),
-                        Dialogs.CHOOSE_FROM_GALLERY_REQUEST);
+                        MainActivity.CHOOSE_FROM_GALLERY_REQUEST);
             }
             interruptedIntentRequestCode = 0;
         }
@@ -230,9 +230,9 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
         }
         if (resultCode == Activity.RESULT_OK) {
             Bitmap bitmap = null;
-            if (requestCode == Dialogs.CAPTURE_PICTURE_REQUEST) {
+            if (requestCode == MainActivity.CAPTURE_PICTURE_REQUEST) {
                 bitmap = ImageUtils.loadImageFromStorage("temp", this);
-            } else if (requestCode == Dialogs.CHOOSE_FROM_GALLERY_REQUEST) {
+            } else if (requestCode == MainActivity.CHOOSE_FROM_GALLERY_REQUEST) {
                 try {
                     bitmap = ImageUtils.resizeBitmap(MediaStore.Images.Media.getBitmap
                             (getApplicationContext().getContentResolver(), data.getData()));

@@ -1,14 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
-        <item name="actionMenuTextColor">@color/white</item>
-        <item name="homeAsUpIndicator">@drawable/ic_back_button</item>
     </style>
 
     <style name="AppTheme.ActionBarStyle" parent="@style/Widget.AppCompat.ActionBar.Solid">
@@ -18,8 +16,8 @@
     <style name="AppTheme.ActionBarStyle.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:fontFamily">@font/raustila_regular</item>
         <item name="android:textSize">30sp</item>
-        <item name="android:textColor">@color/white</item>
     </style>
+
     <style name="MainActivityItemTitle" parent="Base.TextAppearance.AppCompat">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">22sp</item>
