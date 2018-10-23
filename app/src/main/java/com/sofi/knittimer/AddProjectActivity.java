@@ -32,7 +32,8 @@ import com.sofi.knittimer.utils.ImageUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
+public class AddProjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener, DialogUtils.TimeSetterDialogFragment.TimeSetterDialogListener {
 
     protected EditText projectName;
     protected ImageView pictureBackground;
@@ -42,7 +43,8 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
 
     protected Dialogs dialogs;
 
-    protected LinearLayout timeSpentLayout;
+    protected LinearLayout timeSpentButton;
+    protected LinearLayout percentageDoneButton;
     protected TextView percentageDoneTv;
 
     public static final int PERMISSION_REQUEST_CODE = 999;
@@ -86,18 +88,21 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
             }
         });
 
-        timeSpentLayout = findViewById(R.id.layout_time_spent);
-        timeSpentLayout.setOnClickListener(new View.OnClickListener() {
+        timeSpentButton = findViewById(R.id.time_spent_button);
+        timeSpentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogs.getNewEditTimeDialogFragment((TextView) findViewById(R.id.tv_hours),
-                        (TextView) findViewById(R.id.tv_minutes),
-                        (TextView) findViewById(R.id.tv_seconds)).show(getFragmentManager(), "edit time");
+                DialogUtils.TimeSetterDialogFragment
+                        .newInstance(Integer.parseInt(((TextView) findViewById(R.id.tv_hours)).getText().toString()),
+                                Integer.parseInt(((TextView) findViewById(R.id.tv_minutes)).getText().toString()),
+                                Integer.parseInt(((TextView) findViewById(R.id.tv_seconds)).getText().toString()))
+                        .show(getFragmentManager(), "edit time");
             }
         });
 
+        percentageDoneButton = findViewById(R.id.percent_button);
         percentageDoneTv = findViewById(R.id.tv_percent);
-        percentageDoneTv.setOnClickListener(new View.OnClickListener() {
+        percentageDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogUtils.PercentageSetterDialogFragment
@@ -244,11 +249,11 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     }
 
     protected long getTimeSpentInMillis() {
-        long value = Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_hours))
+        long value = Long.parseLong(((TextView) timeSpentButton.findViewById(R.id.tv_hours))
                 .getText().toString()) * 1000 * 60 * 60;
-        value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_minutes))
+        value += Long.parseLong(((TextView) timeSpentButton.findViewById(R.id.tv_minutes))
                 .getText().toString()) * 1000 * 60;
-        value += Long.parseLong(((TextView) timeSpentLayout.findViewById(R.id.tv_seconds))
+        value += Long.parseLong(((TextView) timeSpentButton.findViewById(R.id.tv_seconds))
                 .getText().toString()) * 1000;
         return value;
     }
@@ -256,27 +261,32 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
     protected void changeTimeSpent(long timeInMillis) {
         long hours = timeInMillis / (1000 * 60 * 60);
         if (hours < 10) {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_hours)).setText("0" + hours);
+            ((TextView) timeSpentButton.findViewById(R.id.tv_hours)).setText("0" + hours);
         } else {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_hours)).setText(hours + "");
+            ((TextView) timeSpentButton.findViewById(R.id.tv_hours)).setText(hours + "");
         }
         long minutes = (timeInMillis / (1000 * 60)) % 60;
         if (minutes < 10) {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_minutes)).setText("0" + minutes);
+            ((TextView) timeSpentButton.findViewById(R.id.tv_minutes)).setText("0" + minutes);
         } else {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_minutes)).setText(minutes + "");
+            ((TextView) timeSpentButton.findViewById(R.id.tv_minutes)).setText(minutes + "");
         }
         long seconds = (timeInMillis / 1000) % 60;
         if (seconds < 10) {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_seconds)).setText("0" + seconds);
+            ((TextView) timeSpentButton.findViewById(R.id.tv_seconds)).setText("0" + seconds);
         } else {
-            ((TextView) timeSpentLayout.findViewById(R.id.tv_seconds)).setText(seconds + "");
+            ((TextView) timeSpentButton.findViewById(R.id.tv_seconds)).setText(seconds + "");
         }
     }
 
     @Override
-    public void onPauseDialogPositiveClick(int projectId, int newPercentage) {
+    public void onPercentageSetterDialogPositiveClick(int projectId, int newPercentage) {
         percentageDoneTv.setText(newPercentage + "%");
         percentageDoneTv.setTag(newPercentage);
+    }
+
+    @Override
+    public void onTimeSetterDialogPositiveClick(long time) {
+        changeTimeSpent(time);
     }
 }

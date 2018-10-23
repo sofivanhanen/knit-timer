@@ -18,7 +18,7 @@ public final class DialogUtils {
     public static class PercentageSetterDialogFragment extends DialogFragment {
 
         public interface PercentageSetterDialogListener {
-            void onPauseDialogPositiveClick(int projectId, int newPercentage);
+            void onPercentageSetterDialogPositiveClick(int projectId, int newPercentage);
         }
 
         PercentageSetterDialogListener mListener;
@@ -47,7 +47,7 @@ public final class DialogUtils {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             LayoutInflater inflater = getActivity().getLayoutInflater();
-            View view = inflater.inflate(R.layout.dialog_pause, null);
+            View view = inflater.inflate(R.layout.dialog_edit_percentage, null);
 
             // Setup percentage picker
             final NumberPicker numberPicker = (NumberPicker) view.findViewById(R.id.number_picker);
@@ -60,7 +60,73 @@ public final class DialogUtils {
                     .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            mListener.onPauseDialogPositiveClick(getArguments().getInt(MainActivity.PROJECT_ID_KEY), numberPicker.getValue());
+                            mListener.onPercentageSetterDialogPositiveClick(getArguments().getInt(MainActivity.PROJECT_ID_KEY), numberPicker.getValue());
+                        }
+                    }).setNegativeButton(R.string.dialog_button_cancel, null);
+            return builder.create();
+        }
+    }
+
+    public static class TimeSetterDialogFragment extends DialogFragment {
+
+        public interface TimeSetterDialogListener {
+            void onTimeSetterDialogPositiveClick(long time);
+        }
+
+        TimeSetterDialogListener mListener;
+
+        // Helper for bundling information
+        public static TimeSetterDialogFragment newInstance(int hours, int minutes, int seconds) {
+            TimeSetterDialogFragment fragment = new TimeSetterDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt(MainActivity.HOURS_KEY, hours);
+            args.putInt(MainActivity.MINUTES_KEY, minutes);
+            args.putInt(MainActivity.SECONDS_KEY, seconds);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
+            try {
+                mListener = (TimeSetterDialogListener) context;
+            } catch (ClassCastException exception) {
+                throw new ClassCastException(context.toString() + " must implement TimeSetterDialogListener");
+            }
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.dialog_edit_time, null);
+
+            // Setup number pickers
+            final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);
+            npHours.setMaxValue(999);
+            npHours.setMinValue(0);
+            npHours.setValue(getArguments().getInt(MainActivity.HOURS_KEY));
+
+            final NumberPicker npMinutes = (NumberPicker) view.findViewById(R.id.np_minutes);
+            npMinutes.setMaxValue(59);
+            npMinutes.setMinValue(0);
+            npMinutes.setValue(getArguments().getInt(MainActivity.MINUTES_KEY));
+
+            final NumberPicker npSeconds = (NumberPicker) view.findViewById(R.id.np_seconds);
+            npSeconds.setMaxValue(59);
+            npSeconds.setMinValue(0);
+            npSeconds.setValue(getArguments().getInt(MainActivity.SECONDS_KEY));
+
+            builder.setMessage(R.string.dialog_message_edit_time)
+                    .setView(view)
+                    .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            long timeInMillis = (long) npHours.getValue() * 1000 * 60 * 60
+                                    + (long) npMinutes.getValue() * 1000 * 60
+                                    + (long) npSeconds.getValue() * 1000;
+                            mListener.onTimeSetterDialogPositiveClick(timeInMillis);
                         }
                     }).setNegativeButton(R.string.dialog_button_cancel, null);
             return builder.create();

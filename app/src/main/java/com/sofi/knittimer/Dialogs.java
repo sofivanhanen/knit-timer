@@ -42,10 +42,6 @@ public class Dialogs {
         }
     }
 
-    EditTimeDialogFragment getNewEditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
-        return new EditTimeDialogFragment(hours, minutes, seconds);
-    }
-
     public DebuggingDialog getNewDebuggingDialog() {
         return new DebuggingDialog();
     }
@@ -117,58 +113,6 @@ public class Dialogs {
                 }
             });
             return builder.create();
-        }
-    }
-
-    public class EditTimeDialogFragment extends DialogFragment {
-
-        private TextView hours;
-        private TextView minutes;
-        private TextView seconds;
-
-        public EditTimeDialogFragment(TextView hours, TextView minutes, TextView seconds) {
-            this.hours = hours;
-            this.minutes = minutes;
-            this.seconds = seconds;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            View view = addProjectActivityContext.getLayoutInflater().inflate(R.layout.dialog_edit_time, null);
-
-            final NumberPicker npHours = (NumberPicker) view.findViewById(R.id.np_hours);
-            npHours.setMaxValue(999);
-            npHours.setMinValue(0);
-            npHours.setValue(Integer.parseInt(hours.getText() + ""));
-
-            final NumberPicker npMinutes = (NumberPicker) view.findViewById(R.id.np_minutes);
-            npMinutes.setMaxValue(59);
-            npMinutes.setMinValue(0);
-            npMinutes.setValue(Integer.parseInt(minutes.getText() + ""));
-
-            final NumberPicker npSeconds = (NumberPicker) view.findViewById(R.id.np_seconds);
-            npSeconds.setMaxValue(59);
-            npSeconds.setMinValue(0);
-            npSeconds.setValue(Integer.parseInt(seconds.getText() + ""));
-
-            builder.setMessage(R.string.dialog_message_edit_time)
-                    .setView(view)
-                    .setPositiveButton(R.string.dialog_button_confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            long timeInMillis = (long) npHours.getValue() * 1000 * 60 * 60
-                                    + (long) npMinutes.getValue() * 1000 * 60
-                                    + (long) npSeconds.getValue() * 1000;
-                            addProjectActivityContext.changeTimeSpent(timeInMillis);
-                        }
-                    }).setNegativeButton(R.string.dialog_button_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            Dialog dialog = builder.create();
-            return dialog;
         }
     }
 

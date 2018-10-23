@@ -17,7 +17,6 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/number_picker"
         android:fontFamily="sans-serif"
-        android:text="%"
-        android:textSize="48sp" />
+        android:text="%"/>
 
 </RelativeLayout>

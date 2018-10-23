@@ -3,16 +3,11 @@ package com.sofi.knittimer;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sofi.knittimer.utils.ImageUtils;
@@ -32,7 +27,7 @@ public class EditProjectActivity extends AddProjectActivity {
         findViewById(R.id.spinner).setVisibility(View.GONE);
 
         projectName.setText(intent.getStringExtra(MainActivity.PROJECT_NAME_KEY));
-        timeSpentLayout = (LinearLayout) findViewById(R.id.layout_time_spent);
+        timeSpentButton = (LinearLayout) findViewById(R.id.layout_time_spent);
         changeTimeSpent(intent.getLongExtra(MainActivity.PROJECT_TIME_KEY, 0));
         percentageDoneTv.setText(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0) + "%");
         percentageDoneTv.setTag(intent.getIntExtra(MainActivity.PROJECT_PERCENT_KEY, 0));

@@ -30,7 +30,8 @@ import com.sofi.knittimer.utils.DialogUtils;
 import com.sofi.knittimer.utils.ImageUtils;
 import com.sofi.knittimer.utils.NotificationUtils;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        DialogUtils.PercentageSetterDialogFragment.PercentageSetterDialogListener {
 
     // TODO: Save data so that data persists through deleting and reinstalling
     // TODO: Add broadcast receiver for ACTION_SHUTDOWN and update running project when phone turns off
@@ -48,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String PROJECT_TIME_KEY = "project time";
     public static final String PROJECT_PERCENT_KEY = "project percent";
     public static final String PROJECT_HAS_IMAGE_KEY = "project has image in temp";
+
+    public static final String HOURS_KEY = "hours";
+    public static final String MINUTES_KEY = "minutes";
+    public static final String SECONDS_KEY = "seconds";
 
     private boolean bitmapIsWaiting;
     private int waitingBitmapProjectId;
@@ -250,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onPauseDialogPositiveClick(int projectId, int newPercentage) {
+    public void onPercentageSetterDialogPositiveClick(int projectId, int newPercentage) {
         Project project = mAdapter.getProjectById(projectId);
         project.percentageDone = newPercentage;
         updateProject(project);
