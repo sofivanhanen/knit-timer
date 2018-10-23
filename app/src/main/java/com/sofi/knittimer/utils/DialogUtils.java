@@ -179,4 +179,45 @@ public final class DialogUtils {
         }
     }
 
+    public static class DeleteProjectDialogFragment extends DialogFragment {
+
+        public interface DeleteProjectDialogListener {
+            void onDeleteProjectDialogPositiveClick(int projectId);
+        }
+
+        DeleteProjectDialogListener mListener;
+
+        // Helper for bundling information
+        public static DeleteProjectDialogFragment newInstance(int projectId) {
+            DeleteProjectDialogFragment fragment = new DeleteProjectDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt(MainActivity.PROJECT_ID_KEY, projectId);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
+            try {
+                mListener = (DeleteProjectDialogListener) context;
+            } catch (ClassCastException exception) {
+                throw new ClassCastException(context.toString() + " must implement PercentageSetterDialogListener");
+            }
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.dialog_message_delete)
+                    .setPositiveButton(R.string.dialog_button_delete, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mListener.onDeleteProjectDialogPositiveClick(getArguments().getInt(MainActivity.PROJECT_ID_KEY));
+                        }
+                    }).setNegativeButton(R.string.dialog_button_cancel, null);
+            return builder.create();
+        }
+    }
+
 }
