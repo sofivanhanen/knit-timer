@@ -187,7 +187,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 int currentlyRunningId = preferences.getInt(activityContext.getResources()
                         .getString(R.string.shared_preferences_current_id_key), -1);
                 if (currentlyRunningId == -1) { // if no project is currently running (play)
-                    if (selectedItemIndex == getIndexOfProject(project)) {
+                    if (mActionMode != null && selectedItemIndex == getIndexOfProject(project)) {
                         showCannotEditToast();
                         return;
                     }

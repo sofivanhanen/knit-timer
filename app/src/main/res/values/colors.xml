@@ -5,9 +5,9 @@
     <color name="colorAccent">#ffa5b9</color>
 
     <color name="white">#FFFFFF</color>
-    <color name="white_very_high_opacity">#CCFFFFFF</color>
-    <color name="white_high_opacity">#99FFFFFF</color>
-    <color name="white_mid_opacity">#66FFFFFF</color>
+    <color name="white_very_high_opacity">#EEFFFFFF</color>
+    <color name="white_high_opacity">#BBFFFFFF</color>
+    <color name="white_mid_opacity">#77FFFFFF</color>
     <color name="black">#000000</color>
     <color name="dark_grey">#333333</color>
     <color name="black_very_high_opacity">#DD000000</color>
