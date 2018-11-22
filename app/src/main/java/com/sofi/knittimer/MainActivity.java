@@ -143,6 +143,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportLoaderManager().restartLoader(ID_PROJECTS_LOADER, null, this);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }

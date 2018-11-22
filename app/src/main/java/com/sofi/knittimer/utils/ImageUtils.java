@@ -49,7 +49,7 @@ public final class ImageUtils {
             File file = createImageFile(context, imagePath);
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
         } catch (Exception e) {
-            Log.e(TAG, "Error while loading bitmap from storage");
+            Log.i(TAG, "Error while loading bitmap from storage");
         }
         return bitmap;
     }

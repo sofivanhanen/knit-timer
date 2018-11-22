@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_descriptor">
         <activity android:name=".MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,12 +31,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
+        <activity android:name=".EditProjectActivity"
+            android:label="@string/edit_project_activity_header"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <provider
             android:name=".data.ProjectProvider"
             android:authorities="com.sofi.knittimer.data.projectprovider"
             android:exported="false" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.sofi.knittimer.fileprovider"
@@ -46,14 +51,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity android:name=".EditProjectActivity"
-            android:label="@string/edit_project_activity_header"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
     </application>
 
 </manifest>
