@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.utils.DialogUtils;
 import com.sofi.knittimer.utils.NotificationUtils;
@@ -60,12 +59,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 Project project = new Project(newCursor.getInt(0), newCursor.getString(1),
                         newCursor.getLong(2), newCursor.getInt(3));
                 projects.add(project);
-                // This task will get the background image of this project.
-                // If the image exists, it will save it into project.background
-                // and call notifyItemChanged().
-                // TODO: use LruCache
-                FetchImageTask task = new FetchImageTask(project, newCursor.getPosition(), this);
-                task.execute();
+                activityContext.loadBackground(project, newCursor.getPosition());
             } while (newCursor.moveToNext());
         }
         Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
@@ -328,5 +322,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         editor.putLong(activityContext.getResources().getString
                 (R.string.shared_preferences_begin_time_key), -1);
         editor.apply();
+    }
+
+    public void notifyBackgroundChanged(int position) {
+        notifyItemChanged(position);
+        Project project = projects.get(position);
+        if (project.background != null) {
+            activityContext.changeBackgroundInMemoryCache(String.valueOf(project.id), project.background);
+        }
     }
 }

@@ -6,25 +6,24 @@ import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
+import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.sofi.knittimer.data.FetchImageTask;
 import com.sofi.knittimer.data.Project;
 import com.sofi.knittimer.data.ProjectContract;
 import com.sofi.knittimer.utils.DataUtils;
@@ -41,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private RecyclerView mRecyclerView;
     private ProjectAdapter mAdapter;
+    private LruCache<String, Bitmap> mBackgroundCache;
 
     public static final int ADD_PROJECT_REQUEST = 24;
     public static final int EDIT_PROJECT_REQUEST = 42;
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupCache();
 
         setContentView(R.layout.activity_main);
 
@@ -99,6 +100,44 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    private void setupCache() {
+        // see https://developer.android.com/topic/performance/graphics/cache-bitmap#java
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 4;
+        mBackgroundCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+
+    }
+
+    private void addBackgroundToMemoryCache(String key, Bitmap background) {
+        if (getBackgroundFromMemoryCache(key) == null) {
+            mBackgroundCache.put(key, background);
+        }
+    }
+
+    public void changeBackgroundInMemoryCache(String key, Bitmap background) {
+        mBackgroundCache.remove(key);
+        addBackgroundToMemoryCache(key, background);
+    }
+
+    private Bitmap getBackgroundFromMemoryCache(String key) {
+        return mBackgroundCache.get(key);
+    }
+
+    public void loadBackground(Project project, int cursorPosition) {
+        final String imageKey = String.valueOf(project.id);
+        final Bitmap bitmap = getBackgroundFromMemoryCache(imageKey);
+        if (bitmap != null) {
+            project.background = bitmap;
+        }
+        FetchImageTask task = new FetchImageTask(project, cursorPosition, mAdapter);
+        task.execute();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -121,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case EDIT_PROJECT_REQUEST:
                 switch (resultCode) {
                     case RESULT_OK:
-
                         bitmapIsWaiting = data.getBooleanExtra(PROJECT_HAS_IMAGE_KEY, false);
                         waitingBitmapProjectId = data.getIntExtra(PROJECT_ID_KEY, -1);
                         ContentValues contentValues = DataUtils.intentToContentValues(data);

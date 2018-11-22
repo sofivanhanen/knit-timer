@@ -29,9 +29,10 @@ public class FetchImageTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if (bitmap != null) {
+        if (bitmap != null ||
+                project.background != null) {
             project.background = bitmap;
-            adapterContext.notifyItemChanged(position);
+            adapterContext.notifyBackgroundChanged(position);
         }
     }
 }
