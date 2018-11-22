@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void setupCache() {
         // see https://developer.android.com/topic/performance/graphics/cache-bitmap#java
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 4;
+        final int cacheSize = maxMemory / 4; // TODO don't use this much memory
         mBackgroundCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
@@ -220,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case ID_PROJECTS_LOADER:
-
                 if (bitmapIsWaiting && data.moveToFirst()) {
                     int mostRecentId = -1;
                     if (waitingBitmapProjectId != -1) {

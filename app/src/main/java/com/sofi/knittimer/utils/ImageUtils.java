@@ -31,7 +31,7 @@ public final class ImageUtils {
         try {
             File myPath = createImageFile(context, imagePath);
             fileOutputStream = new FileOutputStream(myPath);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 10, fileOutputStream)) throw new Exception("Compression failed");
         } catch (Exception e) {
             Log.e(TAG, "Error saving bitmap to storage");
         } finally {

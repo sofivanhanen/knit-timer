@@ -58,8 +58,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             do {
                 Project project = new Project(newCursor.getInt(0), newCursor.getString(1),
                         newCursor.getLong(2), newCursor.getInt(3));
-                projects.add(project);
                 activityContext.loadBackground(project, newCursor.getPosition());
+                projects.add(project);
             } while (newCursor.moveToNext());
         }
         Project runningProject = getProjectById(preferences.getInt(activityContext.getResources()
