@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.sofi.knittimer.utils.ImageUtils;
 
 public class EditProjectActivity extends AddProjectActivity {
+    // TODO Add option to remove background
 
     private Intent intent;
 

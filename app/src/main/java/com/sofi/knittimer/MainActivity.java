@@ -1,6 +1,5 @@
 package com.sofi.knittimer;
 
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentValues;
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void setupCache() {
         // see https://developer.android.com/topic/performance/graphics/cache-bitmap#java
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 4; // TODO don't use this much memory
+        final int cacheSize = maxMemory / 8;
         mBackgroundCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
@@ -113,28 +112,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-    private void addBackgroundToMemoryCache(String key, Bitmap background) {
-        if (getBackgroundFromMemoryCache(key) == null) {
-            mBackgroundCache.put(key, background);
-        }
-    }
-
     public void changeBackgroundInMemoryCache(String key, Bitmap background) {
         mBackgroundCache.remove(key);
-        addBackgroundToMemoryCache(key, background);
+        background = ImageUtils.resizeBitmapForCache(background);
+        mBackgroundCache.put(key, background);
     }
 
     private Bitmap getBackgroundFromMemoryCache(String key) {
         return mBackgroundCache.get(key);
     }
 
-    public void loadBackground(Project project, int cursorPosition) {
-        final String imageKey = String.valueOf(project.id);
+    public void loadBackground(Project project) {
+        final String imageKey = "" + project.id;
         final Bitmap bitmap = getBackgroundFromMemoryCache(imageKey);
         if (bitmap != null) {
             project.background = bitmap;
         }
-        FetchImageTask task = new FetchImageTask(project, cursorPosition, mAdapter);
+        FetchImageTask task = new FetchImageTask(project, mAdapter);
         task.execute();
     }
 
@@ -233,7 +227,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         } while (data.moveToNext());
                     }
                     // TODO: Make this asynchronous
-                    ImageUtils.saveToExternalStorage(ImageUtils.loadImageFromStorage("temp", this), "proj" + mostRecentId, MainActivity.this);
+                    Bitmap bitmap = ImageUtils.loadImageFromStorage("temp", this);
+                    ImageUtils.saveToExternalStorage(bitmap, "proj" + mostRecentId, MainActivity.this);
+                    changeBackgroundInMemoryCache("" + mostRecentId, bitmap);
                     bitmapIsWaiting = false;
                     data.moveToFirst();
                 }

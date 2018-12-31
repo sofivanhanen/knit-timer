@@ -58,7 +58,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             do {
                 Project project = new Project(newCursor.getInt(0), newCursor.getString(1),
                         newCursor.getLong(2), newCursor.getInt(3));
-                activityContext.loadBackground(project, newCursor.getPosition());
+                activityContext.loadBackground(project);
                 projects.add(project);
             } while (newCursor.moveToNext());
         }
@@ -324,11 +324,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         editor.apply();
     }
 
-    public void notifyBackgroundChanged(int position) {
-        notifyItemChanged(position);
-        Project project = projects.get(position);
-        if (project.background != null) {
-            activityContext.changeBackgroundInMemoryCache(String.valueOf(project.id), project.background);
-        }
+    public void notifyBackgroundChanged(int id) {
+        notifyItemChanged(getIndexOfProject(getProjectById(id)));
     }
 }

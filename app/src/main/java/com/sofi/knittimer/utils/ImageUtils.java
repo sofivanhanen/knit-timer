@@ -26,7 +26,7 @@ public final class ImageUtils {
         if (bitmap == null) {
             return;
         }
-        bitmap = resizeBitmap(bitmap);
+        bitmap = resizeBitmapForStorage(bitmap);
         FileOutputStream fileOutputStream = null;
         try {
             File myPath = createImageFile(context, imagePath);
@@ -54,10 +54,17 @@ public final class ImageUtils {
         return bitmap;
     }
 
-    public static Bitmap resizeBitmap(Bitmap bitmap) {
+    public static Bitmap resizeBitmapForStorage(Bitmap bitmap) {
+        return resizeBitmap(bitmap, 1920);
+    }
+
+    public static Bitmap resizeBitmapForCache(Bitmap bitmap) {
+        return resizeBitmap(bitmap, 192);
+    }
+
+    private static Bitmap resizeBitmap(Bitmap bitmap, int maxWidth) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        int maxWidth = 1920;
 
         while (width > maxWidth) {
             width /= 2;

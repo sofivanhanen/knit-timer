@@ -228,7 +228,7 @@ public class AddProjectActivity extends AppCompatActivity implements AdapterView
                 bitmap = ImageUtils.loadImageFromStorage("temp", this);
             } else if (requestCode == MainActivity.CHOOSE_FROM_GALLERY_REQUEST) {
                 try {
-                    bitmap = ImageUtils.resizeBitmap(MediaStore.Images.Media.getBitmap
+                    bitmap = ImageUtils.resizeBitmapForStorage(MediaStore.Images.Media.getBitmap
                             (getApplicationContext().getContentResolver(), data.getData()));
                     ImageUtils.saveToExternalStorage(bitmap, "temp", AddProjectActivity.this);
                 } catch (IOException e) {
